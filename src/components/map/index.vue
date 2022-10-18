@@ -12,40 +12,76 @@
         debug
       >
       </my-dv-geo-gl>
-      <!-- <div id="map"></div> -->
     </my-dv-page>
   </div>
 </template>
 
 <script>
 import geoJson from '$ui/charts/geo/china.json';
-import { GaodeMap } from '@antv/l7-maps';
-import {
-  Scene,
-  PointLayer,
-  Popup
-} from '@antv/l7';
 
 export default {
+  props: {
+    rank1Data: {
+      type: Array,
+      default: () => []
+    }
+  },
+  watch: {
+    rank1Data(val) {
+      val.forEach(v => {
+        this.data.rows.forEach(r => {
+          if (r[0].indexOf(v) >= 0 || v.indexOf(r[0]) >= 0) {
+            r[1] = v.totalScore;
+          }
+        })
+      })
+    }
+  },
   data() {
     return {
       geoJson: geoJson,
       data: {
         type: 'bar3D',
-        columns: ['省份', '答题人数'],
+        columns: ['份', '答题人数'],
+        // 中国共计34个级行政区，包括23个、5个自治区、4个直辖市、2个特别行政区。
         rows: [
-          ['广东', 200],
-          ['北京', 160],
-          ['广西', 178],
-          ['湖南', 190],
-          ['湖北', 110],
-          ['福建', 187],
-          ['新疆', 90],
-          ['贵州', 125],
-          ['江苏', 263],
-          ['山西', 180],
-          ['山东', 190],
-          ['黑龙江', 145]
+          ['河北', 0],
+          ['山西', 0],
+          ['辽宁', 0],
+          ['吉林', 0],
+          ['黑龙江', 0],
+          ['江苏', 0],
+          ['浙江', 0],
+          ['安徽', 0],
+          ['福建', 0],
+          ['江西', 0],
+          ['山东', 0],
+          ['河南', 0],
+          ['湖北', 0],
+          ['湖南', 0],
+          ['广东', 0],
+          ['海南', 0],
+          ['四川', 0],
+          ['贵州', 0],
+          ['云南', 0],
+          ['陕西', 0],
+          ['甘肃', 0],
+          ['青海', 0],
+          ['台湾', 0],
+
+          ['内蒙古', 0],
+          ['广西', 0],
+          ['西藏', 0],
+          ['宁夏', 0],
+          ['新疆', 0],
+
+          ['北京', 0],
+          ['天津', 0],
+          ['上海', 0],
+          ['重庆', 0],
+
+          ['香港', 0],
+          ['澳门', 0]
         ]
       },
       extend: {
@@ -54,97 +90,53 @@ export default {
           formatter: function({ seriesName, name, value }) {
             return `${seriesName}<br>${name}: ${value[2]}`;
           }
-        },
-        label: {
-          show: true,
-          distance: 2,
-          textStyle: {
-            fontSize: 16,
-            borderWidth: 1
-          },
-          fontSize: 16,
-          borderWidth: 1
-        },
-        silence: true,
-        bevelSize: 1,
-        itemStyle: {
-          color: 'rgba(255, 255, 0, 0.5)'
-          // type: 'linear-gradient',
-          // colorStops: [
-          //   {
-          //     offset: 0,
-          //     color: '#000'
-          //   },
-          //   {
-          //     offset: 1,
-          //     color: '#fff'
-          //   }
-          // ]
-        },
-        emphasis: {
-          itemStyle: {
-            color: 'rgba(255, 255, 0, 1)',
-            fontSize: 20
-          }
-        },
-        viewControl: { // 鼠标事件
-          protection: 'perspective', // todo
-          minDistance: 300, // todo
-          distance: 300 // todo
         }
+        // label: {
+        //   show: true,
+        //   // distance: 1,
+        //   textStyle: {
+        //     fontSize: 16,
+        //     borderWidth: 1
+        //   },
+        //   fontSize: 16,
+        //   borderWidth: 1
+        // },
+        // silence: true,
+        // // bevelSize: 1,
+        // itemStyle: {
+        //   color: 'rgba(255, 255, 0, 0.5)'
+        //   // type: 'linear-gradient',
+        //   // colorStops: [
+        //   //   {
+        //   //     offset: 0,
+        //   //     color: '#000'
+        //   //   },
+        //   //   {
+        //   //     offset: 1,
+        //   //     color: '#fff'
+        //   //   }
+        //   // ]
+        // },
+        // emphasis: {
+        //   itemStyle: {
+        //     color: 'rgba(255, 255, 0, 1)',
+        //     fontSize: 20
+        //   }
+        // }
+        // viewControl: { // 鼠标事件
+        //   protection: 'perspective', // todo
+        //   minDistance: 300, // todo
+        //   distance: 300 // todo
+        // }
       }
     };
   },
   mounted() {
     console.log('地图geoJson');
     console.log(this.geoJson);
+    console.log(this.data.rows.length);
   },
   methods: {
-    loadAntV() {
-      const scene = new Scene({
-        id: 'map',
-        map: new GaodeMap({
-          pitch: 70,
-          style: 'dark',
-          center: [105, 31.847],
-          rotation: 0,
-          zoom: 4.2
-        })
-      });
-      scene.on('loaded', () => {
-        const pointLayer = new PointLayer({ depth: false })
-          .source(this.geoJson, {
-            parser: {
-              type: 'json',
-              x: 'j',
-              y: 'w'
-            }
-          })
-          .shape('cylinder')
-          .size('t', function(level) {
-            return [1, 1, level * 2 + 20];
-          })
-          .animate(true)
-          .active(true)
-          .color('#006CFF')
-          .style({
-            opacity: 0.8,
-            sourceColor: 'red',
-            targetColor: 'yellow',
-            lightEnable: false
-          });
-        pointLayer.on('mousemove', e => {
-          const popup = new Popup({
-            offsets: [0, 0],
-            closeButton: false
-          })
-            .setLnglat(e.lngLat)
-            .setHTML(`<span>${e.feature.s}: ${e.feature.t}℃</span>`);
-          scene.addPopup(popup);
-        });
-        scene.addLayer(pointLayer);
-      });
-    }
   }
 };
 </script>

@@ -3,8 +3,8 @@
     <my-dv-starry :opacity="0.4"></my-dv-starry>
 
     <my-dv-header5>
-      <span class="competitors-total">参赛总人数：128人</span>
-      <my-dv-title type="primary" strong shadow x-align="center">{{title}}</my-dv-title>
+      <span class="competitors-total">参赛总人数：{{totalPeople || 0}}人</span>
+      <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title>
       <span class="date">
         <!-- <span>{{dateStr}}&nbsp;{{dayStr}}&nbsp;</span> -->
         <!-- <span>{{dateStr}}&nbsp;</span> -->
@@ -25,27 +25,37 @@
             <my-dv-adorn7 x-align="center">
               <div class="title-container">
                 <span class="title-logo title-logo-1"></span>
-                <span class="total-score">窝点勘察</span>
+                <span class="total-score">{{form.subject1}}</span>
               </div>
             </my-dv-adorn7>
           </div>
           <div class="subject-container">
             <div class="subjects">
-              <div>科目一</div>
+              <div
+                v-for="(sub, i) in arrSub1"
+                :key="i"
+                :class="{
+                  'active': interval.answerProfile.value1 % arrSub1.length === i,
+                  'inactive': answerProfileData1.onlineNumber === 0
+                }">
+                {{sub.name}}
+              </div>
+              <!-- test 下为展示用 -->
+              <!-- <div>科目一</div>
               <div class="active">科目二</div>
-              <div class="inactive">科目三</div>
+              <div class="inactive">科目三</div> -->
             </div>
             <div class="title">
               <div>答题概况</div>
-              <div>科目一</div>
+              <div>{{answerProfileData1.stageName || '加载中'}}</div>
             </div>
             <div class="number">
-              <div>在考人：20 人</div>
-              <div>已完成：80 人</div>
-              <div>准确率：50 %</div>
+              <div>在考人：{{answerProfileData1.onlineNumber || 0}} 人</div>
+              <div>已完成：{{answerProfileData1.finishedNumber || 0}} 人</div>
+              <div>准确率：{{answerProfileData1.accuracyRate || 0}} %</div>
             </div>
           </div>
-          <my-dv-loading v-if="true"></my-dv-loading>
+          <my-dv-loading v-if="loading"></my-dv-loading>
           <!-- 列表 -->
           <div class="list-container">
             <!-- 表头 -->
@@ -53,42 +63,60 @@
               <span style="width: 10%">名次</span>
               <span style="width: 10%">名字</span>
               <span style="width: 15%">省份</span>
-              <!-- todo 注意科目数量 -->
-              <span style="width: 10%">科目一</span>
+              <!-- todo 注意科目数量 平分总宽度的 55% -->
+              <span
+                v-for="(stage, i) in arrSub1"
+                :key="i"
+                :style="{ width: `${55 / arrSub1.length}%` }">{{stage.name}}</span>
+              <!-- <span style="width: 10%">科目一</span>
               <span style="width: 10%">科目二</span>
               <span style="width: 10%">科目三</span>
-              <span style="width: 10%">科目四</span>
+              <span style="width: 10%">科目四</span> -->
               <span style="width: 10%">总分</span>
             </div>
             <!-- 表内容 -->
             <!-- 前10名 -->
             <!-- todo 循环时注意：用类名实现1、3名的排名黄底渐变 -->
-            <div class="content">
-              <span style="width: 10%">20</span>
-              <span class="name" style="width: 10%">王志豪</span>
-              <span class="province" style="width: 15%">广东省</span>
-              <!-- todo 注意科目数量 start -->
-              <span class="score" style="width: 10%">100</span>
-              <span class="score" style="width: 10%">80</span>
-              <span class="score active" style="width: 10%">50</span>
-              <span class="score" style="width: 10%"></span>
-              <!-- todo 注意科目数量 end -->
-              <span style="width: 10%">70</span>
-            </div>
+            <transition-group name="list-complete">
+              <div
+                class="content list-complete-item"
+                v-for="(person, i) in listLeft"
+                v-show="i < 10"
+                :key="i">
+                <span style="width: 10%">{{person.rankNo}}</span>
+                <span class="name" style="width: 10%">{{person.name}}</span>
+                <span class="province" style="width: 15%">{{person.province}}</span>
+                <!-- todo 注意科目数量 start -->
+                <span
+                  :class="{ 'score': true, 'active': i === arrSub1.length - 1 }"
+                  v-for="(stage, i) in arrSub1"
+                  :key="i"
+                  :style="{ width: `${55 / arrSub1.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
+                <!-- todo 注意科目数量 end -->
+                <span style="width: 10%">{{person.totalScore}}</span>
+              </div>
+            </transition-group>
             <div class="dash"></div>
             <!-- 10名 以后 -->
-            <div class="content-last">
-              <span style="width: 10%">20</span>
-              <span class="name" style="width: 10%">王志豪</span>
-              <span class="province" style="width: 15%">广东省</span>
-              <!-- todo 注意科目数量 start -->
-              <span class="score" style="width: 10%">100</span>
-              <span class="score" style="width: 10%">80</span>
-              <span class="score active" style="width: 10%">50</span>
-              <span class="score" style="width: 10%"></span>
-              <!-- todo 注意科目数量 end -->
-              <span style="width: 10%">70</span>
-            </div>
+            <transition-group name="list-complete">
+              <div
+                class="content-last list-complete-item"
+                v-for="(person, i) in listLeft"
+                v-show="i >= 10"
+                :key="i">
+                <span style="width: 10%">{{person.rankNo}}</span>
+                <span class="name" style="width: 10%">{{person.name}}</span>
+                <span class="province" style="width: 15%">{{person.province}}</span>
+                <!-- todo 注意科目数量 start -->
+                <span
+                  :class="{ 'score': true, 'active': i === arrSub1.length - 1 }"
+                  v-for="(stage, i) in arrSub1"
+                  :key="i"
+                  :style="{ width: `${55 / arrSub1.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
+                <!-- todo 注意科目数量 end -->
+                <span style="width: 10%">{{person.totalScore}}</span>
+              </div>
+            </transition-group>
           </div><!-- list-container end -->
         </my-dv-border12>
 
@@ -127,16 +155,19 @@
                 </div>
                 <div class="right">
                   <div class="province">
-                    <span>张三【广东省】</span>
-                    <span>当前排名：10</span>
+                    <!-- <span>张三【广东省】</span> -->
+                    <span>{{playerIntroductionData[0].name}}【{{playerIntroductionData[0].province}}】</span>
+                    <span>当前排名：{{playerIntroductionData[0].rankNo}}</span>
                   </div>
                   <div class="common">
                     <p>人员简介：</p>
-                    <p>人员简介人员简介人员简介人员简介</p>
+                    <p>{{playerIntroductionData[0].personel}}</p>
+                    <!-- <p>人员简介人员简介人员简介人员简介</p> -->
                   </div>
                   <div class="common">
                     <p>比赛宣言：</p>
-                    <p>比赛宣言比赛宣言比赛宣言比赛宣言比赛宣言</p>
+                    <p>{{playerIntroductionData[0].competitionDeclaration}}</p>
+                    <!-- <p>比赛宣言比赛宣言比赛宣言比赛宣言比赛宣言</p> -->
                   </div>
                 </div>
               </div>
@@ -144,37 +175,30 @@
             <!-- 浮框 -->
             <div class="float-container">
               <!-- 窝点勘察 -->
-              <div class="float-item wdkc">
-                <div class="tag">
-                  <span></span>
-                  <span>窝点勘察</span>
-                </div>
-                <div class="content">
-                  <div class="img"></div>
-                  <div class="text">
-                    <span>张三丰：答对1题！</span>
-                    <span>已连续答对3题，排名第10！</span>
-                    <span>13:44:10</span>
+              <transition-group name="list-complete">
+                <div
+                  v-for="(item, i) in realTimeDynamicData" :key="i"
+                  :class="{
+                    'list-complete-item': true,
+                    'float-item': true,
+                    'wdkc': form.subject1ids.indexOf(item.competitionId) >= 0,
+                    'jcjd': form.subject1ids.indexOf(item.competitionId) < 0
+                  }">
+                  <div class="tag">
+                    <span></span>
+                    <span>{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}</span>
+                    <!-- <span>窝点勘察</span> -->
+                  </div>
+                  <div class="content">
+                    <div class="img"></div>
+                    <div class="text">
+                      <span>张三丰：答对1题！</span>
+                      <span>已连续答对{{item.continueRight}}题！</span>
+                      <span>{{item.recordTime}}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!-- 检查鉴定 -->
-              <div class="float-item jcjd">
-                <div class="tag">
-                  <span></span>
-                  <span>检查鉴定</span>
-                </div>
-                <div class="content">
-                  <div class="img">
-                    <!-- <img src="" alt="人员图片"> -->
-                  </div>
-                  <div class="text">
-                    <span>张三丰：答对1题！</span>
-                    <span>已连续答对3题，排名第10！</span>
-                    <span>13:44:10</span>
-                  </div>
-                </div>
-              </div>
+              </transition-group>              
             </div>
           </my-dv-box>
         </my-dv-box>
@@ -184,32 +208,40 @@
       <!-- 右侧 检查鉴定 -->
       <my-dv-box layout :gap="10" height="100%">
         <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)">
-          <!-- <my-dv-adorn7 :level="6" x-align="center" top="10px">检查鉴定</my-dv-adorn7> -->
           <div class="title-bg">
             <my-dv-adorn7 x-align="center">
               <div class="title-container">
                 <span class="title-logo title-logo-2"></span>
-                <span class="total-score">检查鉴定</span>
+                <span class="total-score">{{form.subject2}}</span>
               </div>
             </my-dv-adorn7>
           </div>
           <div class="subject-container">
             <div class="subjects">
-              <div>科目一</div>
+              <div
+                v-for="(sub, i) in arrSub2"
+                :key="i"
+                :class="{
+                  'active': interval.answerProfile.value2 % arrSub2.length === i,
+                  'inactive': answerProfileData2.onlineNumber === 0
+                }">
+                {{sub.name}}
+              </div>
+              <!-- <div>科目一</div>
               <div class="active">科目二</div>
-              <div class="inactive">科目三</div>
+              <div class="inactive">科目三</div> -->
             </div>
             <div class="title">
               <div>答题概况</div>
-              <div>科目一</div>
+              <div>{{answerProfileData2.stageName || '加载中'}}</div>
             </div>
             <div class="number">
-              <div>在考人：20 人</div>
-              <div>已完成：80 人</div>
-              <div>准确率：50 %</div>
+              <div>在考人：{{answerProfileData2.onlineNumber || 0}} 人</div>
+              <div>已完成：{{answerProfileData2.finishedNumber || 0}} 人</div>
+              <div>准确率：{{answerProfileData2.accuracyRate || 0}} %</div>
             </div>
           </div>
-          <my-dv-loading v-if="true"></my-dv-loading>
+          <my-dv-loading v-if="loading"></my-dv-loading>
           <!-- 列表 -->
           <div class="list-container">
             <!-- 表头 -->
@@ -217,40 +249,54 @@
               <span style="width: 10%">名次</span>
               <span style="width: 10%">名字</span>
               <span style="width: 15%">省份</span>
-              <!-- todo 注意科目数量 -->
-              <span style="width: 10%">科目一</span>
+              <!-- todo 注意科目数量 平分总宽度的 55% -->
+              <span
+                v-for="(stage, i) in arrSub2"
+                :key="i"
+                :style="{ width: `${55 / arrSub2.length}%` }">{{stage.name}}</span>
+              <!-- <span style="width: 10%">科目一</span>
               <span style="width: 10%">科目二</span>
               <span style="width: 10%">科目三</span>
-              <span style="width: 10%">科目四</span>
+              <span style="width: 10%">科目四</span> -->
               <span style="width: 10%">总分</span>
             </div>
             <!-- 表内容 -->
             <!-- 前10名 -->
-            <div class="content">
-              <span style="width: 10%">20</span>
-              <span class="name" style="width: 10%">王志豪</span>
-              <span class="province" style="width: 15%">广东省</span>
+            <div
+              class="content"
+              v-for="(person, i) in listRight"
+              v-show="i < 10"
+              :key="i">
+              <span style="width: 10%">{{person.rankNo}}</span>
+              <span class="name" style="width: 10%">{{person.name}}</span>
+              <span class="province" style="width: 15%">{{person.province}}</span>
               <!-- todo 注意科目数量 start -->
-              <span class="score" style="width: 10%">100</span>
-              <span class="score" style="width: 10%">80</span>
-              <span class="score active" style="width: 10%">50</span>
-              <span class="score" style="width: 10%"></span>
+              <span
+                :class="{ 'score': true, 'active': i === arrSub2.length - 1 }"
+                v-for="(stage, i) in arrSub2"
+                :key="i"
+                :style="{ width: `${55 / arrSub2.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
               <!-- todo 注意科目数量 end -->
-              <span style="width: 10%">70</span>
+              <span style="width: 10%">{{person.totalScore}}</span>
             </div>
             <div class="dash"></div>
             <!-- 10名 以后 -->
-            <div class="content-last">
-              <span style="width: 10%">20</span>
-              <span class="name" style="width: 10%">王志豪</span>
-              <span class="province" style="width: 15%">广东省</span>
+            <div
+              class="content-last"
+              v-for="(person, i) in listRight"
+              v-show="i >= 10"
+              :key="i">
+              <span style="width: 10%">{{person.rankNo}}</span>
+              <span class="name" style="width: 10%">{{person.name}}</span>
+              <span class="province" style="width: 15%">{{person.province}}</span>
               <!-- todo 注意科目数量 start -->
-              <span class="score" style="width: 10%">100</span>
-              <span class="score" style="width: 10%">80</span>
-              <span class="score active" style="width: 10%">50</span>
-              <span class="score" style="width: 10%"></span>
+              <span
+                :class="{ 'score': true, 'active': i === arrSub2.length - 1 }"
+                v-for="(stage, i) in arrSub2"
+                :key="i"
+                :style="{ width: `${55 / arrSub2.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
               <!-- todo 注意科目数量 end -->
-              <span style="width: 10%">70</span>
+              <span style="width: 10%">{{person.totalScore}}</span>
             </div>
           </div><!-- list-container end -->
         </my-dv-border12>
@@ -271,8 +317,9 @@
   import {
     answerProfile,
     totalContestantsNumber,
-    provinceAnswerProgress,
-    realTimeDynamic
+    realTimeDynamic,
+    rank,
+    playerIntroduction
   } from '$my/code/api/dv';
 
 
@@ -281,23 +328,49 @@
     data() {
       const form = storage.getForm();
       const timeRange = form.timeRange || [];
-
+      const steps = 1000 * 60 * 3; // 刷新频率 *分钟
       return {
         form,
-        title: window.__GLOBAL__.SCREEN_1_TITLE,
+        steps, // 刷新频率 *分钟
         timeStr: [],
-        
-        loading: true,
+        loading: true, // todo
         interval: {
+          date: { timer: null },
           answerProfile: {
             timer: null,
-            time: 1000 * 60 * 1, // *分钟 间隔
+            time: steps, // *分钟 间隔
             // time: 1000 * 2, // test 2秒 间隔
-            value: 0 // 用来叠加，轮询阶段
-          } // 轮询查阅答题概况
+            value1: 0, // 用来叠加，轮询阶段
+            value2: 0 // 用来叠加，轮询阶段
+          },
+          rank: {
+            timer: null,
+            // time: steps // *分钟 间隔
+            time: 1000 * 2 // test 2秒 间隔
+            // value: 0 // 用来叠加，轮询阶段
+          },
+          playerIntroduction: {
+            timer: null,
+            // time: steps, // *分钟 间隔
+            time: 1000 * 2, // test 2秒 间隔
+            value: 0, // 用来叠加，轮询阶段
+            left: true // 轮询左边还是右边的列表
+          },
+          realTimeDynamic: {
+            timer: null,
+            // time: steps, // *分钟 间隔
+            time: 1000 * 2 // test 2秒 间隔
+          }
         },
         countdown: timeRange.length ? (new Date(timeRange[1]) - new Date(timeRange[0])) / 1000 : 3600 * 2, // 秒
-        pause: false
+        pause: false,
+        totalPeople: 0, // 参赛总人数
+        answerProfileData1: {}, // 答题概况 左边
+        answerProfileData2: {}, // 答题概况 右边
+        listLeft: [], // 左列表
+        listRight: [], // 右列表
+        playerIntroductionData: [], // 选手介绍
+        realTimeDynamicData: [] // 动态
       }
     },
     computed: {
@@ -314,7 +387,25 @@
         const arr = this.dateStr.split('-');
 
         return solarLunar.solar2lunar(arr[0], arr[1], arr[2]);
+      },
+      // 左边 阶段 数组
+      arrSub1() {
+        if (this.form.arrSub && this.form.arrSub.length) {
+          return this.form.arrSub.filter(s => s.subject === this.form.subject1);
+        } else return [];
+      },
+      // 右边 阶段 数组
+      arrSub2() {
+        if (this.form.arrSub && this.form.arrSub.length) {
+          return this.form.arrSub.filter(s => s.subject === this.form.subject2);
+        } else return [];
       }
+    },
+    destroyed() {
+      Object.keys(this.interval).forEach(o => {
+        clearInterval(this.interval[o].timer);
+        this.interval[o].timer = null;
+      });
     },
     mounted() {
       setTimeout(() => {
@@ -339,7 +430,7 @@
         this.pause = !this.pause;
       },
       initTime() {
-        setInterval(() => {
+        this.interval.date.timer = setInterval(() => {
           const time = dateFormat(new Date(), 'hh:mm:ss');
           const timeStr = []
           time.split(':').forEach(t => {
@@ -352,8 +443,8 @@
         // 初始化
         this.walkAnswerProfile(); // 答题概况数据 todo 轮询
         this.totalContestantsNumber(); // 参赛人数数据
-        // this.provinceAnswerProgress(); // 省份答题进度数据
-        // this.realTimeDynamic(); // 获取实时动态
+        this.rank(); // 列表 排名数据 排名的回调中，还会获取 选手介绍 数据
+        this.realTimeDynamic(); // 获取实时动态
       },
       // 轮询答题概况
       walkAnswerProfile() {
@@ -367,25 +458,25 @@
           this.walkAnswerProfileRight();
         }, this.interval.answerProfile.time);
       },
+      // 左边比赛
       walkAnswerProfileLeft() {
-        // 左边比赛
         const key = 'subject1';
         const keyIds = 'subject1ids';
-        this.answerProfile(key, keyIds);
+        this.answerProfile(key, keyIds, '1');
       },
+      // 右边比赛
       walkAnswerProfileRight() {
-        // 右边比赛
         const key = 'subject2';
         const keyIds = 'subject2ids';
-        this.answerProfile(key, keyIds);
+        this.answerProfile(key, keyIds, '2');
       },
-
       // 答题概况数据
-      answerProfile(key, keyIds) {
-        const subject = this.form[key];
-        const ids = this.form[keyIds].split(',');
+      answerProfile(key, keyIds, leftOrRight) {
+        const subject = this.form[key]; // 窝点勘察/检查鉴定
+        const ids = this.form[keyIds]; // 窝点勘察ids/检查鉴定ids
+        // 左边/右边的阶段数组 [科目一, 科目二...]
         const stage = this.form.arrSub.filter(s => s.subject === subject);
-        const random = stage.length ? this.interval.answerProfile.value++ % stage.length : -1;
+        const random = stage.length ? (this.interval.answerProfile[`value${leftOrRight}`])++ % stage.length : -1;
         if (random === -1) {
           return;
         }
@@ -394,47 +485,118 @@
           // competitionName: '',
           stageName: stage[random].name
         };
-        console.log(key, keyIds, stage, random);
         answerProfile(query).then(res => {
           console.log('答题概况数据', res);
+          if (res.data && res.data.length) {
+            this[`answerProfileData${leftOrRight}`] = res.data[0]; // todo
+          }
         }).catch(e => {
           console.log(e);
         });
       },
       // 参赛人数数据
       totalContestantsNumber() {
-        const sub1 = this.form.subject1ids.split(',');
-        const sub2 = this.form.subject2ids.split(',');
+        const sub1 = this.form.subject1ids;
+        const sub2 = this.form.subject2ids;
         const query = {
           competitionIds: sub1.concat(sub2)
         }
         totalContestantsNumber(query).then(res => {
           console.log('参赛人数数据', res);
+          this.totalPeople = res.data; // todo
         }).catch(e => {
           console.log(e);
         });
       },
-      // 省份答题进度数据
-      provinceAnswerProgress() {
-        // '阶段一': []
-        const query = {
-          competitionMap: {
-
+      // 列表
+      rank() {
+        // 左列表
+        this.rankLeft();
+        // 右列表
+        this.rankRight();
+        this.interval.rank.timer = setInterval(() => {
+          this.rankLeft();
+          this.rankRight();
+        }, this.interval.rank.time);
+      },
+      rankLeft() {
+        rank({
+          competitionIds: this.form.subject1ids,
+          pageNo: 1,
+          pageSize: 15
+        }).then(res => {
+          if (res.data.list) { // todo
+            this.listLeft = res.data.list || [];
+            if (this.interval.playerIntroduction.timer === null) {
+              this.playerIntroduction(); // 通过列表获取选手介绍
+            }
           }
-        }
-        provinceAnswerProgress(query).then(res => {
-          console.log('省份答题进度数据', res);
         }).catch(e => {
           console.log(e);
-        });
+        })
       },
-      // 实时动态数据
+      rankRight() {
+        rank({
+          competitionIds: this.form.subject2ids,
+          pageNo: 1,
+          pageSize: 15
+        }).then(res => {
+          if (res.data.list) { // todo
+            this.listRight = res.data.list || [];
+          }
+        }).catch(e => {
+          console.log(e);
+        })
+      },
+      // 选手介绍
+      // 依赖 排名接口
+      playerIntroduction() {
+        const userId = this.listLeft[0].userId; // 唯一调用在左边列表回调中，所以使用左边列表为首项
+        playerIntroduction({ userId }).then(res => {
+          this.playerIntroductionData = res.data; // todo
+        }).catch(e => {
+          console.log(e);
+        })
+        this.interval.playerIntroduction.timer = setInterval(() => {
+          const left = this.interval.playerIntroduction.left;
+          const length = left ? this.listLeft.length : this.listRight.length;
+          let current = this.interval.playerIntroduction.value;
+          if (++current === length) {
+            this.interval.playerIntroduction.left = !left;
+            this.interval.playerIntroduction.value = 0;
+          } else {
+            this.interval.playerIntroduction.value = current;
+          }
+
+          const temp = left
+            ? this.listLeft[this.interval.playerIntroduction.value]
+            : this.listRight[this.interval.playerIntroduction.value];
+          const userId = temp.userId;
+          playerIntroduction({ userId }).then(res => {
+            this.playerIntroductionData = res.data; // todo
+            this.playerIntroductionData.name = temp.name;
+          }).catch(e => {
+            console.log(e);
+          })
+        }, this.interval.playerIntroduction.time);
+      },
+      
+      // 实时动态数据 用于展示中间部分，下面的浮框
       realTimeDynamic() {
         realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
+          this.realTimeDynamicData = res.data; // todo
         }).catch(e => {
           console.log(e);
         });
+        this.interval.realTimeDynamic.timer = setInterval(() => {
+          realTimeDynamic().then(res => {
+            console.log('实时动态数据', res);
+            this.realTimeDynamicData = res.data; // todo
+          }).catch(e => {
+            console.log(e);
+          });
+        }, this.interval.realTimeDynamic.time);
       }
     }
   }
@@ -488,12 +650,13 @@ $totalContentItemHeight: 50px;
       font-size: 35px;
       cursor: pointer;
       .part {
-        width: 50%;
+        width: 45%;
         height: $heightCountdown;
         line-height: $heightCountdown;
-        text-align: center;
+        text-align: right;
       }
       .part2 {
+        width: 55%;
         text-align: left;
         margin-top: -5px;
         /deep/ .my-dv-title {
@@ -864,5 +1027,20 @@ $totalContentItemHeight: 50px;
         }
       }
     }
+  }
+
+  // 动画
+  .list-complete-item {
+    transition: all 1s;
+    /* display: inline-block; */
+    margin-right: 10px;
+  }
+  /* .list-complete-leave-active for below version 2.1.8 */ 
+  .list-complete-enter, .list-complete-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .list-complete-leave-active {
+    position: absolute;
   }
 </style>
