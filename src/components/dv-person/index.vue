@@ -35,7 +35,7 @@
                 v-for="(sub, i) in arrSub1"
                 :key="i"
                 :class="{
-                  'active': interval.answerProfile.value1 % arrSub1.length === i,
+                  'active': (interval.answerProfile.value1 + 1) % arrSub1.length === i,
                   'inactive': answerProfileData1.onlineNumber === 0
                 }">
                 {{sub.name}}
@@ -52,7 +52,7 @@
             <div class="number">
               <div>在考人：{{answerProfileData1.onlineNumber || 0}} 人</div>
               <div>已完成：{{answerProfileData1.finishedNumber || 0}} 人</div>
-              <div>准确率：{{answerProfileData1.accuracyRate || 0}} %</div>
+              <div>准确率：{{answerProfileData1.accuracyRate || 0}}</div>
             </div>
           </div>
           <my-dv-loading v-if="loading"></my-dv-loading>
@@ -82,7 +82,7 @@
                 class="content list-complete-item"
                 v-for="(person, i) in listLeft"
                 v-show="i < 10"
-                :key="i">
+                :key="person.userId">
                 <span style="width: 10%">{{person.rankNo}}</span>
                 <span class="name" style="width: 10%">{{person.name}}</span>
                 <span class="province" style="width: 15%">{{person.province}}</span>
@@ -90,7 +90,7 @@
                 <span
                   :class="{ 'score': true, 'active': i === arrSub1.length - 1 }"
                   v-for="(stage, i) in arrSub1"
-                  :key="i"
+                  :key="stage.name + i"
                   :style="{ width: `${55 / arrSub1.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
                 <!-- todo 注意科目数量 end -->
                 <span style="width: 10%">{{person.totalScore}}</span>
@@ -98,12 +98,12 @@
             </transition-group>
             <div class="dash"></div>
             <!-- 10名 以后 -->
-            <transition-group name="list-complete">
+            <transition-group name="list-complete" v-if="listLeft && listLeft.length">
               <div
                 class="content-last list-complete-item"
                 v-for="(person, i) in listLeft"
                 v-show="i >= 10"
-                :key="i">
+                :key="person.userId">
                 <span style="width: 10%">{{person.rankNo}}</span>
                 <span class="name" style="width: 10%">{{person.name}}</span>
                 <span class="province" style="width: 15%">{{person.province}}</span>
@@ -111,7 +111,7 @@
                 <span
                   :class="{ 'score': true, 'active': i === arrSub1.length - 1 }"
                   v-for="(stage, i) in arrSub1"
-                  :key="i"
+                  :key="stage.name + i"
                   :style="{ width: `${55 / arrSub1.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
                 <!-- todo 注意科目数量 end -->
                 <span style="width: 10%">{{person.totalScore}}</span>
@@ -144,7 +144,7 @@
               </div>
             </div>
             <!-- 介绍 -->
-            <div class="introduction-container">
+            <div class="introduction-container"  v-if="playerIntroductionData && playerIntroductionData.length">
               <div class="title">选手介绍</div>
               <div class="introduction-content">
                 <div class="left">
@@ -161,7 +161,7 @@
                   </div>
                   <div class="common">
                     <p>人员简介：</p>
-                    <p>{{playerIntroductionData[0].personel}}</p>
+                    <p>{{playerIntroductionData[0].personnel}}</p>
                     <!-- <p>人员简介人员简介人员简介人员简介</p> -->
                   </div>
                   <div class="common">
@@ -175,9 +175,9 @@
             <!-- 浮框 -->
             <div class="float-container">
               <!-- 窝点勘察 -->
-              <transition-group name="list-complete">
+              <transition-group name="list-complete"  v-if="realTimeDynamicData && realTimeDynamicData.length">
                 <div
-                  v-for="(item, i) in realTimeDynamicData" :key="i"
+                  v-for="(item) in realTimeDynamicData" :key="item.userId"
                   :class="{
                     'list-complete-item': true,
                     'float-item': true,
@@ -217,7 +217,7 @@
             </my-dv-adorn7>
           </div>
           <div class="subject-container">
-            <div class="subjects">
+            <div class="subjects" v-if="arrSub2 && arrSub2.length">
               <div
                 v-for="(sub, i) in arrSub2"
                 :key="i"
@@ -231,21 +231,21 @@
               <div class="active">科目二</div>
               <div class="inactive">科目三</div> -->
             </div>
-            <div class="title">
+            <div class="title" v-if="answerProfileData2">
               <div>答题概况</div>
               <div>{{answerProfileData2.stageName || '加载中'}}</div>
             </div>
             <div class="number">
               <div>在考人：{{answerProfileData2.onlineNumber || 0}} 人</div>
               <div>已完成：{{answerProfileData2.finishedNumber || 0}} 人</div>
-              <div>准确率：{{answerProfileData2.accuracyRate || 0}} %</div>
+              <div>准确率：{{answerProfileData2.accuracyRate || 0}}</div>
             </div>
           </div>
           <my-dv-loading v-if="loading"></my-dv-loading>
           <!-- 列表 -->
-          <div class="list-container">
+          <div class="list-container" v-if="listRight && listRight.length">
             <!-- 表头 -->
-            <div class="header">
+            <div class="header" v-if="arrSub2 && arrSub2.length">
               <span style="width: 10%">名次</span>
               <span style="width: 10%">名字</span>
               <span style="width: 15%">省份</span>
@@ -262,42 +262,50 @@
             </div>
             <!-- 表内容 -->
             <!-- 前10名 -->
-            <div
-              class="content"
-              v-for="(person, i) in listRight"
-              v-show="i < 10"
-              :key="i">
-              <span style="width: 10%">{{person.rankNo}}</span>
-              <span class="name" style="width: 10%">{{person.name}}</span>
-              <span class="province" style="width: 15%">{{person.province}}</span>
-              <!-- todo 注意科目数量 start -->
-              <span
-                :class="{ 'score': true, 'active': i === arrSub2.length - 1 }"
-                v-for="(stage, i) in arrSub2"
-                :key="i"
-                :style="{ width: `${55 / arrSub2.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
-              <!-- todo 注意科目数量 end -->
-              <span style="width: 10%">{{person.totalScore}}</span>
-            </div>
+            <transition-group name="list-complete" v-if="listRight && listRight.length">
+              <div
+                class="content list-complete-item"
+                v-for="(person, i) in listRight"
+                v-show="i < 10"
+                :key="person.userId">
+                <span style="width: 10%">{{person.rankNo}}</span>
+                <span class="name" style="width: 10%">{{person.name}}</span>
+                <span class="province" style="width: 15%">{{person.province}}</span>
+                <!-- todo 注意科目数量 start -->
+                <!-- todo active 类如何给，需求：提交了的后一阶段给 active -->
+                <span
+                  :class="{
+                    'score': true,
+                    'active': false
+                  }"
+                  v-for="(stage, i) in arrSub2"
+                  :key="stage.name + i"
+                  :style="{ width: `${55 / arrSub2.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
+                <!-- todo 注意科目数量 end -->
+                <span style="width: 10%">{{person.totalScore}}</span>
+              </div>
+            </transition-group>
             <div class="dash"></div>
             <!-- 10名 以后 -->
-            <div
-              class="content-last"
-              v-for="(person, i) in listRight"
-              v-show="i >= 10"
-              :key="i">
-              <span style="width: 10%">{{person.rankNo}}</span>
-              <span class="name" style="width: 10%">{{person.name}}</span>
-              <span class="province" style="width: 15%">{{person.province}}</span>
-              <!-- todo 注意科目数量 start -->
-              <span
-                :class="{ 'score': true, 'active': i === arrSub2.length - 1 }"
-                v-for="(stage, i) in arrSub2"
-                :key="i"
-                :style="{ width: `${55 / arrSub2.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
-              <!-- todo 注意科目数量 end -->
-              <span style="width: 10%">{{person.totalScore}}</span>
-            </div>
+            <transition-group name="list-complete" v-if="listRight && listRight.length">
+              <div
+                class="content-last list-complete-item"
+                v-for="(person, i) in listRight"
+                v-show="i >= 10"
+                :key="person.userId">
+                <span style="width: 10%">{{person.rankNo}}</span>
+                <span class="name" style="width: 10%">{{person.name}}</span>
+                <span class="province" style="width: 15%">{{person.province}}</span>
+                <!-- todo 注意科目数量 start -->
+                <span
+                  :class="{ 'score': true, 'active': i === arrSub2.length - 1 }"
+                  v-for="(stage, i) in arrSub2"
+                  :key="stage.name + i"
+                  :style="{ width: `${55 / arrSub2.length}%` }">{{person.stageScoreMap[stage.name]}}</span>
+                <!-- todo 注意科目数量 end -->
+                <span style="width: 10%">{{person.totalScore}}</span>
+              </div>
+            </transition-group>
           </div><!-- list-container end -->
         </my-dv-border12>
       </my-dv-box>
@@ -306,14 +314,16 @@
     <init-dialog
       ref="initDialog"
       :pause="pause"
-      @on-pause="onPause"></init-dialog>
+      @on-pause="onPause"
+      @on-reset-time="onResetTime"></init-dialog>
   </my-dv-page>
 </template>
 <script>
   import initDialog from '../init-dialog';
-  import dateFormat from '$ui/utils/date'
-  import solarLunar from 'solarlunar'
+  import dateFormat from '$ui/utils/date';
+  import solarLunar from 'solarlunar';
   import storage from '@/helper/storage';
+  import { onPause, onStart, onReset } from '@/helper/bus';
   import {
     answerProfile,
     totalContestantsNumber,
@@ -322,13 +332,14 @@
     playerIntroduction
   } from '$my/code/api/dv';
 
+  const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
 
   export default {
     components: { initDialog },
     data() {
       const form = storage.getForm();
       const timeRange = form.timeRange || [];
-      const steps = 1000 * 60 * 3; // 刷新频率 *分钟
+      const steps = REFRESH_STEPS; // 刷新频率 *分钟
       return {
         form,
         steps, // 刷新频率 *分钟
@@ -345,21 +356,21 @@
           },
           rank: {
             timer: null,
-            // time: steps // *分钟 间隔
-            time: 1000 * 2 // test 2秒 间隔
+            time: steps // *分钟 间隔
+            // time: 1000 * 2 // test 2秒 间隔
             // value: 0 // 用来叠加，轮询阶段
           },
           playerIntroduction: {
             timer: null,
-            // time: steps, // *分钟 间隔
-            time: 1000 * 2, // test 2秒 间隔
+            time: steps, // *分钟 间隔
+            // time: 1000 * 2, // test 2秒 间隔
             value: 0, // 用来叠加，轮询阶段
             left: true // 轮询左边还是右边的列表
           },
           realTimeDynamic: {
             timer: null,
-            // time: steps, // *分钟 间隔
-            time: 1000 * 2 // test 2秒 间隔
+            time: steps // *分钟 间隔
+            // time: 1000 * 2 // test 2秒 间隔
           }
         },
         countdown: timeRange.length ? (new Date(timeRange[1]) - new Date(timeRange[0])) / 1000 : 3600 * 2, // 秒
@@ -412,7 +423,9 @@
         this.loading = false
       }, 500)
       const form = storage.getForm();
+
       if (form && JSON.stringify(form) !== '{}') this.form = form;
+      else this.onShowInit();
 
       this.initTime();
       this.init();
@@ -420,6 +433,9 @@
     methods: {
       onShowInit() {
         this.$refs.initDialog.dialogVisible = true;
+      },
+      onResetTime() {
+        this.$refs.timer.reset();
       },
       onPause() {
         if (this.pause) {
@@ -430,14 +446,58 @@
         this.pause = !this.pause;
       },
       initTime() {
+        // 右上角时间
         this.interval.date.timer = setInterval(() => {
-          const time = dateFormat(new Date(), 'hh:mm:ss');
+          const current = new Date();
+          const time = dateFormat(current, 'hh:mm:ss');
           const timeStr = []
           time.split(':').forEach(t => {
             timeStr.push(t.split(''));
           });
           this.timeStr = timeStr;
+
+          // 首次加载，达到比赛时间，自动倒计时
+          if (this.$refs.timer && this.form.timeRange && this.form.timeRange[0]) {
+            if (current - new Date(this.form.timeRange[0]) >= 0) {
+              if (!this.pause && this.startCountdown) {
+                this.$nextTick(() => {
+                  this.$refs.timer.start();
+                })
+                this.startCountdown = false;
+                this.pause = false;
+              }
+            }
+          }
         }, 1000)
+
+        // 倒计时
+        if (this.form.timeRange.length) {
+          const endT = this.form.timeRange[this.form.timeRange.length - 1];
+          const startS = this.form.timeRange[0];
+          const endD = new Date(endT);
+          const startD = new Date(startS);
+          const now = new Date();
+
+          // 修正倒计时
+          if (endD - now) { // 未到结束时间
+            if (now - startD) { // 到达开始时间
+              this.countdown = (endD - now) / 1000;
+              // console.log('修正倒计时', this.countdown, startD, endD, now);
+            }
+          }
+        }
+
+        // 监听 两屏的倒计时，统一暂停开启
+        onReset((data) => this.$refs.timer.reset());
+        onStart((data) => {
+            this.$refs.timer.start();
+            this.pause = !this.pause;
+        });
+        onPause((data) => {
+            this.$refs.timer.stop();
+            this.pause = !this.pause;
+        });
+        
       },
       init() {
         // 初始化
@@ -487,9 +547,7 @@
         };
         answerProfile(query).then(res => {
           console.log('答题概况数据', res);
-          if (res.data && res.data.length) {
-            this[`answerProfileData${leftOrRight}`] = res.data[0]; // todo
-          }
+          this[`answerProfileData${leftOrRight}`] = res; // todo
         }).catch(e => {
           console.log(e);
         });
@@ -503,7 +561,7 @@
         }
         totalContestantsNumber(query).then(res => {
           console.log('参赛人数数据', res);
-          this.totalPeople = res.data; // todo
+          this.totalPeople = res; // todo
         }).catch(e => {
           console.log(e);
         });
@@ -525,8 +583,9 @@
           pageNo: 1,
           pageSize: 15
         }).then(res => {
-          if (res.data.list) { // todo
-            this.listLeft = res.data.list || [];
+          console.log('左列表', res);
+          if (res.list) { // todo
+            this.listLeft = res.list || [];
             if (this.interval.playerIntroduction.timer === null) {
               this.playerIntroduction(); // 通过列表获取选手介绍
             }
@@ -541,8 +600,9 @@
           pageNo: 1,
           pageSize: 15
         }).then(res => {
-          if (res.data.list) { // todo
-            this.listRight = res.data.list || [];
+          console.log('右列表', res);
+          if (res.list) { // todo
+            this.listRight = res.list || [];
           }
         }).catch(e => {
           console.log(e);
@@ -553,7 +613,7 @@
       playerIntroduction() {
         const userId = this.listLeft[0].userId; // 唯一调用在左边列表回调中，所以使用左边列表为首项
         playerIntroduction({ userId }).then(res => {
-          this.playerIntroductionData = res.data; // todo
+          this.playerIntroductionData = res; // todo
         }).catch(e => {
           console.log(e);
         })
@@ -573,7 +633,8 @@
             : this.listRight[this.interval.playerIntroduction.value];
           const userId = temp.userId;
           playerIntroduction({ userId }).then(res => {
-            this.playerIntroductionData = res.data; // todo
+            console.log('选手介绍', res)
+            this.playerIntroductionData = res; // todo
             this.playerIntroductionData.name = temp.name;
           }).catch(e => {
             console.log(e);
@@ -585,14 +646,14 @@
       realTimeDynamic() {
         realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
-          this.realTimeDynamicData = res.data; // todo
+          this.realTimeDynamicData = res; // todo
         }).catch(e => {
           console.log(e);
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
           realTimeDynamic().then(res => {
             console.log('实时动态数据', res);
-            this.realTimeDynamicData = res.data; // todo
+            this.realTimeDynamicData = res; // todo
           }).catch(e => {
             console.log(e);
           });
@@ -705,6 +766,7 @@ $totalContentItemHeight: 50px;
   // 列表
   .list-container {
     font-weight: bold;
+    font-size: 20px;
     text-align: center;
     // 分割线
     .dash {
@@ -715,9 +777,13 @@ $totalContentItemHeight: 50px;
     .header {
       background: $blueBg;
       display: flex;
+      height: 30px;
+      line-height: 30px;
     }
     .content {
       display: flex;
+      height: 35px;
+      line-height: 35px;
       margin: 10px 0;
       background: $listBg;
 
@@ -729,8 +795,8 @@ $totalContentItemHeight: 50px;
 
       // 前三名样式
       &:nth-child(1), &:nth-child(2), &:nth-child(3) {
-        height: 40px;
-        line-height: 40px;
+        height: 45px;
+        line-height: 45px;
         font-size: 20px;
         color: $yellowFont;
         span:first-child {
@@ -773,6 +839,8 @@ $totalContentItemHeight: 50px;
     // 10名以后 的列表
     .content-last {
       display: flex;
+      height: 35px;
+      line-height: 35px;
       margin: 10px 0;
       background: $listBg;
 

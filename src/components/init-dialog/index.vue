@@ -3,7 +3,9 @@
     title="初始化信息"
     :visible.sync="dialogVisible"
     width="70%"
-    :before-close="onClose">
+    :before-close="onClose"
+    modal-append-to-body
+    append-to-body>
     <el-form ref="form" :model="form" label-width="80px">
       <el-form-item label="大屏标题">
         <el-input v-model="form.title" name="title" label="大屏标题"></el-input>
@@ -54,6 +56,7 @@
 
     </el-form>
     <span slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="onResetTime">重置计时</el-button>
       <el-button :type="pause ? 'warning' : 'primary'" @click="onPause">{{pause ? '开 始' : '暂 停'}}</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="onSubmit">确 定</el-button>
@@ -63,8 +66,8 @@
 
 <script>
 import storage from '@/helper/storage';
+import { emitStart, emitPause, emitReset } from '@/helper/bus';
 
-const CONSTANT = window.__GLOBAL__;
 
 export default {
   props: {
@@ -74,12 +77,6 @@ export default {
     }
   },
   computed: {
-    leftTitle() {
-      return CONSTANT.SUBJECT_TITLE_LEFT;
-    },
-    rightTitle() {
-      return CONSTANT.SUBJECT_TITLE_RIGHT;
-    },
     options() {
       return [
         {
@@ -100,7 +97,7 @@ export default {
         title: '', // 标题
         subject1: '', // 左边比赛名，如 窝点勘察
         subject2: '', // 右边比赛名，如 检查鉴定
-        arrSub: [{ name: '', subject: '', id: '' }], // 比赛的阶段列表
+        arrSub: [{ name: '', subject: '' }], // 比赛的阶段列表
         timeRange: [new Date(), new Date()] // 考试时间-倒计时的计算
       }
     }
@@ -108,13 +105,23 @@ export default {
   mounted() {
     const form = storage.getForm();
     if (form && JSON.stringify(form) !== '{}') {
+      if (Array.isArray(form.subject1ids)) {
+        form.subject1ids = form.subject1ids.join(',');
+      }
+      if (Array.isArray(form.subject2ids)) {
+        form.subject2ids = form.subject2ids.join(',');
+      }
       this.form = form;
     }
   },
   methods: {
+    onResetTime() {
+      this.$emit('on-reset-time');
+      // this.onBus({ type: 'reset' });
+    },
     onPause() {
       this.$emit('on-pause');
-      console.log(this.pause);
+      // this.onBus({ type: 'pause', data: !this.pause });
     },
     onClose(done) {
       this.$confirm('确认关闭？')
@@ -140,6 +147,15 @@ export default {
     // 删除
     onDel(i) {
       this.form.arrSub.splice(i, 1);
+    },
+    onBus({ type, data }) {
+      if (type === 'start') {
+        emitStart(data);
+      } else if (type === 'pause') {
+        emitPause(data);
+      } else {
+        emitReset(data);
+      }
     }
   }
 }

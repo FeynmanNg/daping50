@@ -1,17 +1,26 @@
 <!-- my 大屏 -->
 <template>
   <div class="map-container">
-    <my-dv-page target="parent" fit>
+    <my-dv-loading v-if="data.data.length === 0"></my-dv-loading>
+    <my-dv-page target="parent" fit v-if="data.data.length">
+    <!-- <my-dv-page target="parent" fit> -->
       <my-dv-geo-gl
         fit
         :json="geoJson"
         :columns="data.columns"
         :rows="data.rows"
+        :data="data.data"
         :type="data.type"
         :extend="extend"
-        debug
+        :typeHelper="typeHelper"
       >
       </my-dv-geo-gl>
+      <!-- <my-dv-geo fit :json="geoJson"
+                 :columns="data.columns"
+                 :rows="data.rows"
+                 :type="data.type"
+                 :extend="extend"
+                 :typeHelper="typeHelper"></my-dv-geo> -->
     </my-dv-page>
   </div>
 </template>
@@ -28,21 +37,31 @@ export default {
   },
   watch: {
     rank1Data(val) {
-      val.forEach(v => {
-        this.data.rows.forEach(r => {
-          if (r[0].indexOf(v) >= 0 || v.indexOf(r[0]) >= 0) {
-            r[1] = v.totalScore;
-          }
-        })
-      })
+      if (val && val.length) {
+        console.log('地图接受数据 start', val);
+        val.forEach(v => {
+          this.data.rows.forEach(r => {
+            if (r[0].indexOf(v.province) >= 0 || v.province.indexOf(r[0]) >= 0) {
+              r[1] = v.totalScore;
+            }
+            this.data.data.push(r);
+          });
+        });
+        this.loader();
+        console.log('地图接受数据 end rows =', this.data.rows);
+      }
+      
     }
   },
   data() {
     return {
       geoJson: geoJson,
       data: {
+        data: [],
         type: 'bar3D',
-        columns: ['份', '答题人数'],
+        // type: { 答题人数: 'scatter' },
+        // type: { 答题人数: 'effectScatter' },
+        columns: ['省份', '答题人数'],
         // 中国共计34个级行政区，包括23个、5个自治区、4个直辖市、2个特别行政区。
         rows: [
           ['河北', 0],
@@ -90,39 +109,39 @@ export default {
           formatter: function({ seriesName, name, value }) {
             return `${seriesName}<br>${name}: ${value[2]}`;
           }
-        }
-        // label: {
-        //   show: true,
-        //   // distance: 1,
-        //   textStyle: {
-        //     fontSize: 16,
-        //     borderWidth: 1
-        //   },
-        //   fontSize: 16,
-        //   borderWidth: 1
-        // },
+        },
+        label: {
+          show: true,
+          // distance: 1,
+          textStyle: {
+            fontSize: 16
+            // borderWidth: 1
+          },
+          fontSize: 16
+          // borderWidth: 1
+        },
         // silence: true,
         // // bevelSize: 1,
-        // itemStyle: {
-        //   color: 'rgba(255, 255, 0, 0.5)'
-        //   // type: 'linear-gradient',
-        //   // colorStops: [
-        //   //   {
-        //   //     offset: 0,
-        //   //     color: '#000'
-        //   //   },
-        //   //   {
-        //   //     offset: 1,
-        //   //     color: '#fff'
-        //   //   }
-        //   // ]
-        // },
-        // emphasis: {
-        //   itemStyle: {
-        //     color: 'rgba(255, 255, 0, 1)',
-        //     fontSize: 20
-        //   }
-        // }
+        itemStyle: {
+          color: 'rgba(255, 255, 0, 0.5)',
+          type: 'linear-gradient',
+          colorStops: [
+            {
+              offset: 0,
+              color: '#000'
+            },
+            {
+              offset: 1,
+              color: '#fff'
+            }
+          ]
+        },
+        emphasis: {
+          itemStyle: {
+            color: 'rgba(255, 255, 0, 1)',
+            fontSize: 20
+          }
+        }
         // viewControl: { // 鼠标事件
         //   protection: 'perspective', // todo
         //   minDistance: 300, // todo
@@ -134,9 +153,28 @@ export default {
   mounted() {
     console.log('地图geoJson');
     console.log(this.geoJson);
-    console.log(this.data.rows.length);
   },
   methods: {
+    loader() {
+      return Promise.resolve({
+        data: this.data.data,
+        columns: this.data.columns,
+        rows: this.data.rows
+      })
+    },
+    typeHelper({type}) {
+      return {
+        label: {
+          show: true,
+          // formatter: '{b}：{c}人',
+          formatter: ({ data }) => {
+            console.log(111111, data);
+            return `${data.name}\n${data.value[2] || 0}`;
+          },
+          position: 'top'
+        }
+      }
+    }
   }
 };
 </script>
@@ -144,12 +182,5 @@ export default {
 <style lang="scss" scoped>
 .map-container {
 
-  #map {
-    width: 100%;
-    height: calc(1080px - 90px);
-    position: relative;
-    background: #006CFF;
-    justify-content: center;
-  }
 }
 </style>

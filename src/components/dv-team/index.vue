@@ -26,27 +26,38 @@
           <div class="list-container">
             <!-- 表头 -->
             <div class="header">
-              <span>排行</span>
+              <span>名次</span>
               <span>队伍</span>
-              <span>{{subject1}}</span>
-              <span>{{subject2}}</span>
-              <span>分数</span>
+              <span>{{form.subject1}}</span>
+              <span>{{form.subject2}}</span>
+              <span>总分</span>
             </div>
             <!-- 列表内容 -->
-            <div class="content">
+            <div class="content" v-if="rank1Data && rank1Data.length">
+            <!-- <div class="content"> -->
               <div class="top5-bg" v-show="rank1Data.length >= 5"></div>
               <transition-group name="list-complete">
                 <div
                   v-for="(item, i) in rank1Data"
                   v-show="i < 15"
-                  :key="i"
+                  :key="item.areaCode"
                   class="content-item list-complete-item">
                   <span>{{item.rankNo}}</span>
                   <span>{{item.province}}</span>
-                  <span>{{item.competitionMap[subject1]}}</span>
-                  <span>{{item.competitionMap[subject2]}}</span>
+                  <span>{{getValue(item.competitionScoreMap, form.subject1) || 0}}</span>
+                  <span>{{getValue(item.competitionScoreMap, form.subject2) || 0}}</span>
                   <span>{{item.totalScore}}</span>
                 </div>
+                <!-- demo -->
+                <!-- <div
+                  :key="1"
+                  class="content-item list-complete-item">
+                  <span>1</span>
+                  <span>福建省demo</span>
+                  <span>33</span>
+                  <span>44</span>
+                  <span>44</span>
+                </div> -->
               </transition-group>
               <!-- 最多支持 15 行 -->
             </div>
@@ -82,21 +93,12 @@
           </div>
           <!-- 省排名上升至 -->
           <div class="rank-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
-            <!-- <div class="rank">
-              <p>
-                【{{form.subject1ids.indexOf(realTimeDynamicData[0].competitionId) >= 0 ? form.subject1 : form.subject2}}】
-                {{realTimeDynamicData[0].userName}}
-                【{{realTimeDynamicData[0].province}}】
-                已连续答对 {{realTimeDynamicData[0].continueRight}} 题
-              </p>
-              <p class="time">{{realTimeDynamicData[0].recordTime}}</p>
-            </div> -->
             <transition-group name="list-complete">
               <div class="rank list-complete-item"
                 v-for="(item, i) in realTimeDynamicData"
                 v-show="i === 0"
-                :key="i">
-                <p>
+                :key="item.userId">
+                <p class="rank-content">
                   【{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}】
                   {{item.userName}}
                   【{{item.province}}】
@@ -114,27 +116,27 @@
         <my-dv-border12 width="100%" height="70%" fill="rgba(255,255,255,0.05)">
           <div class="title-bg">
             <my-dv-adorn7 x-align="center">
-              <span class="total-score">答题进度</span>
+              <span class="total-score">答题进度榜</span>
             </my-dv-adorn7>
           </div>
-          <div class="process-container">
+          <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length">
             <!-- 最多支持显示 10 条 -->
             <transition-group name="list-complete">
               <div
                 v-for="(item, i) in provinceAnswerProgressData"
                 v-show="i < 10"
-                :key="i"
+                :key="item.areaCode + `_${i}`"
                 class="process list-complete-item">
                 <span class="NO">NO.{{item.rankNo}}</span>
                 <span>{{item.province}}</span>
                 <span class="line-wrap">
                   <span class="line">
-                    <span class="rate" :style="{ width: item.progressMap[form.subject1], 'max-width': '80%' }"></span>
-                    <span class="num">{{item.progressMap[form.subject1]}}</span>
+                    <span class="rate" :style="{ 'width': getValue(item.progressMap, form.subject1), 'max-width': '80%' }"></span>
+                    <span class="num">{{getValue(item.progressMap, form.subject1, true)}}</span>
                   </span>
                   <span class="line">
-                    <span class="rate" :style="{ width: item.progressMap[form.subject2], 'max-width': '80%' }"></span>
-                    <span class="num">{{item.progressMap[form.subject2]}}</span>
+                    <span class="rate" :style="{ 'width': getValue(item.progressMap, form.subject2), 'max-width': '80%' }"></span>
+                    <span class="num">{{getValue(item.progressMap, form.subject2, true)}}</span>
                   </span>
                 </span>
               </div>
@@ -173,9 +175,9 @@
               <span class="total-score">实时动态</span>
             </my-dv-adorn7>
           </div>
-          <div class="rt-container">
+          <div class="rt-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
             <transition-group name="list-complete">
-              <div v-for="(item, i) in realTimeDynamicData" :key="i" class="rt list-complete-item">
+              <div v-for="(item) in realTimeDynamicData" :key="item.userId" class="rt list-complete-item">
                 <div class="rt-time">{{item.recordTime}}</div>
                 <div class="rt-content">
                   【{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}】
@@ -193,35 +195,34 @@
     <init-dialog
       ref="initDialog"
       :pause="pause"
-      @on-pause="onPause"></init-dialog>
+      @on-pause="onPause"
+      @on-reset-time="onResetTime"></init-dialog>
   </my-dv-page>
 </template>
 <script>
-  import dateFormat from '$ui/utils/date'
-  import china from '$ui/charts/geo/china.json'
-  import coordinates from '$ui/dv/utils/coordinates'
-  import solarLunar from 'solarlunar'
-
+  import dateFormat from '$ui/utils/date';
+  import china from '$ui/charts/geo/china.json';
+  import coordinates from '$ui/dv/utils/coordinates';
+  import solarLunar from 'solarlunar';
   import initDialog from '../init-dialog';
   import mapComp from '../map';
-  // import mapComp from '../map/my-map';
-  // import mapComp from '../map/map';
-
   import storage from '@/helper/storage';
+  // import { onPause, onStart, onReset } from '@/helper/bus';
   import {
     totalContestantsNumber,
     provinceAnswerProgress,
     realTimeDynamic,
-    rank1
+    competitionProvinceRank
   } from '$my/code/api/dv';
 
+  const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
 
   export default {
     components: { mapComp, initDialog },
     data() {
       const form = storage.getForm();
       const timeRange = form.timeRange || [];
-      const steps = 1000 * 60 * 3; // 刷新频率 *分钟
+      const steps = REFRESH_STEPS; // 刷新频率 *分钟
       return {
         form,
         steps,
@@ -251,7 +252,7 @@
             time: steps // *分钟 间隔
             // time: 1000 * 2 // test 2秒 间隔
           },
-          rank1: {
+          competitionProvinceRank: {
             timer: null,
             time: steps // *分钟 间隔
             // time: 1000 * 2 // test 2秒 间隔
@@ -288,10 +289,15 @@
       setTimeout(() => {
         this.loading = false
       }, 500)
-      this.initTime();
+      const form = storage.getForm();
 
+      if (form && JSON.stringify(form) !== '{}') this.form = form;
+      else this.onShowInit();
+
+      this.initTime();
+      this.init();
     },
-    destroyed() {
+    destroyed() { 
       Object.keys(this.interval).forEach(o => {
         clearInterval(this.interval[o].timer);
         this.interval[o].timer = null;
@@ -301,6 +307,9 @@
       onShowInit() {
         this.$refs.initDialog.dialogVisible = true;
       },
+      onResetTime() {
+        this.$refs.timer.reset();
+      },
       onPause() {
         if (this.pause) {
           this.$refs.timer.start();
@@ -309,7 +318,12 @@
         }
         this.pause = !this.pause;
       },
+      getValue(obj, key, needPercent) {
+        if (!obj) return needPercent ? '0%' : '0';
+        return obj[key] || '0';
+      },
       initTime() {
+        // 右上角时间
         this.interval.date.timer = setInterval(() => {
           const current = new Date();
           const time = dateFormat(current, 'hh:mm:ss');
@@ -332,13 +346,41 @@
             }
           }
         }, 1000);
+
+        // 倒计时
+        if (this.form.timeRange.length) {
+          const endT = this.form.timeRange[this.form.timeRange.length - 1];
+          const startS = this.form.timeRange[0];
+          const endD = new Date(endT);
+          const startD = new Date(startS);
+          const now = new Date();
+
+          // 修正倒计时
+          if (endD - now) { // 未到结束时间
+            if (now - startD) { // 到达开始时间
+              this.countdown = (endD - now) / 1000;
+              console.log('修正倒计时', this.countdown, startD, endD, now);
+            }
+          }
+        }
+
+        // 监听 两屏的倒计时，统一暂停开启
+        // onReset((data) => this.$refs.timer.reset());
+        // onStart((data) => {
+        //     this.$refs.timer.start();
+        //     this.pause = !this.pause;
+        // });
+        // onPause((data) => {
+        //     this.$refs.timer.stop();
+        //     this.pause = !this.pause;
+        // });
       },
       init() {
         // 初始化
         this.totalContestantsNumber(); // 参赛人数数据
         this.provinceAnswerProgress(); // 省份答题进度数据
         this.realTimeDynamic(); // 获取实时动态
-        this.rank1(); // 获取总分榜
+        this.competitionProvinceRank(); // 获取总分榜
       },
       // 参赛人数数据
       totalContestantsNumber() {
@@ -349,7 +391,7 @@
         }
         totalContestantsNumber(query).then(res => {
           console.log('参赛人数数据', res);
-          this.totalPeople = res.data; // todo
+          this.totalPeople = res; // todo
         }).catch(e => {
           console.log(e);
         });
@@ -366,14 +408,16 @@
         }
         provinceAnswerProgress(query).then(res => {
           console.log('省份答题进度数据', res);
-          this.provinceAnswerProgressData = res.data;
+          this.provinceAnswerProgressData = res;
+          console.log('省份答题进度数据', this.provinceAnswerProgressData);
         }).catch(e => {
           console.log(e);
         });
         this.interval.provinceAnswerProgress.timer = setInterval(() => {
           provinceAnswerProgress(query).then(res => {
             console.log('省份答题进度数据', res);
-            this.provinceAnswerProgressData = res.data;
+            this.provinceAnswerProgressData = res;
+            console.log('省份答题进度数据', this.provinceAnswerProgressData);
           }).catch(e => {
             console.log(e);
           });
@@ -383,37 +427,41 @@
       realTimeDynamic() {
         realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
-          this.realTimeDynamicData = res.data; // todo
+          this.realTimeDynamicData = res; // todo
         }).catch(e => {
           console.log(e);
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
           realTimeDynamic().then(res => {
             console.log('实时动态数据', res);
-            this.realTimeDynamicData = res.data; // todo
+            this.realTimeDynamicData = res; // todo
           }).catch(e => {
             console.log(e);
           });
         }, this.interval.realTimeDynamic.time);
       },
       // 总分榜
-      rank1() {
+      competitionProvinceRank() {
         const competitionMap = {
           [this.form.subject1]: this.form.subject1ids,
           [this.form.subject2]: this.form.subject2ids
         }
-        rank1({ competitionMap }).then(res => {
-          this.rank1Data = res.data; // todo
+        competitionProvinceRank({ competitionMap }).then(res => {
+          console.log('总分榜', res);
+          this.rank1Data = res; // todo
+          console.log('总分榜', this.rank1Data);
         }).catch(e => {
           console.log(e);
         });
-        this.interval.rank1.timer = setInterval(() => {
-          rank1({ competitionMap }).then(res => {
-            this.rank1Data = res.data; // todo
+        this.interval.competitionProvinceRank.timer = setInterval(() => {
+          competitionProvinceRank({ competitionMap }).then(res => {
+            console.log('总分榜', res);
+            this.rank1Data = res; // todo
+            console.log('总分榜', this.rank1Data);
           }).catch(e => {
             console.log(e);
           });
-        }, this.interval.rank1.time);
+        }, this.interval.competitionProvinceRank.time);
       }
     }
   }
@@ -496,6 +544,10 @@
     align-items: center;
     justify-content: center;
     height: 80px;
+    & span {
+      display: inline-block;
+      height: 100%;
+    }
     .rank {
       min-width: 300px;
       height: 100%;
@@ -555,7 +607,7 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         
-        &:nth-child(2) {
+        &:nth-child(1) {
           background: #5b0b2e;
 
           span:first-child {
@@ -566,7 +618,7 @@
             line-height: $totalContentItemHeight - 10px;
           }
         }
-        &:nth-child(3) {
+        &:nth-child(2) {
           background: #094627;
 
           span:first-child {
@@ -577,7 +629,7 @@
             line-height: $totalContentItemHeight - 10px;
           }
         }
-        &:nth-child(4) {
+        &:nth-child(3) {
           background: #6a4226;
 
           span:first-child {
@@ -589,7 +641,7 @@
           }
         }
 
-        &:nth-child(5), &:nth-child(6) {
+        &:nth-child(4), &:nth-child(5) {
           span:first-child {
             background-image: url("../../assets/images/team-4-5.png");
             background-size: contain;
@@ -702,6 +754,8 @@
 
     .process-desc {
       display: flex;
+      position: absolute;
+      bottom: 8px;
       .desc {
         display: flex;
         justify-content: center;

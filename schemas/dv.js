@@ -8,7 +8,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'post'
+        method: 'post'
       }
     },
     {
@@ -18,7 +18,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'post'
+        method: 'get'
       }
     },
     {
@@ -28,7 +28,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'post'
+        method: 'post'
       }
     },
     {
@@ -38,7 +38,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'get'
+        method: 'get'
       }
     },
     {
@@ -48,7 +48,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'post'
+        method: 'post'
       }
     },
     {
@@ -58,7 +58,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'post'
+        method: 'post'
       }
     },
     {
@@ -68,7 +68,7 @@ module.exports = {
       // prefix: '',
       methods: false,
       options: {
-        methods: 'post'
+        method: 'post'
       }
     }
   ]
