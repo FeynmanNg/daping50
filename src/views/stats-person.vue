@@ -5,7 +5,9 @@
 </template>
 
 <script>
-import DvPerson from '@/components/dv-person'
+// import DvPerson from '@/components/dv-person'
+import DvPerson from '@/components/dv-person/index-new'
+// import DvPerson from '@/components/dv-team'
 export default {
   components: {
     DvPerson

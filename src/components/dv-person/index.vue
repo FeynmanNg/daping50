@@ -192,7 +192,7 @@
                   <div class="content">
                     <div class="img"></div>
                     <div class="text">
-                      <span>张三丰：答对1题！</span>
+                      <span>{{item.userName}}：答对1题！</span>
                       <span>已连续答对{{item.continueRight}}题！</span>
                       <span>{{item.recordTime}}</span>
                     </div>
@@ -428,7 +428,7 @@
       else this.onShowInit();
 
       this.initTime();
-      this.init();
+      // this.init();
     },
     methods: {
       onShowInit() {

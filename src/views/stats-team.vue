@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import DvTeam from '@/components/dv-team'
+// import DvTeam from '@/components/dv-team'
+import DvTeam from '@/components/dv-team/index-new'
 export default {
   components: {
     DvTeam

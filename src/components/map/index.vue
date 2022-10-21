@@ -2,8 +2,9 @@
 <template>
   <div class="map-container">
     <my-dv-loading v-if="data.data.length === 0"></my-dv-loading>
-    <my-dv-page target="parent" fit v-if="data.data.length">
-    <!-- <my-dv-page target="parent" fit> -->
+    <!-- demo -->
+    <!-- <my-dv-page target="parent" fit v-if="data.data.length"> -->
+    <my-dv-page target="parent" fit>
       <my-dv-geo-gl
         fit
         :json="geoJson"
@@ -36,22 +37,21 @@ export default {
     }
   },
   watch: {
-    rank1Data(val) {
-      if (val && val.length) {
-        console.log('地图接受数据 start', val);
-        val.forEach(v => {
-          this.data.rows.forEach(r => {
-            if (r[0].indexOf(v.province) >= 0 || v.province.indexOf(r[0]) >= 0) {
-              r[1] = v.totalScore;
-            }
-            this.data.data.push(r);
-          });
-        });
-        this.loader();
-        console.log('地图接受数据 end rows =', this.data.rows);
-      }
-      
-    }
+    // rank1Data(val) {
+    //   if (val && val.length) {
+    //     console.log('地图接受数据 start', val);
+    //     val.forEach(v => {
+    //       this.data.rows.forEach(r => {
+    //         if (r[0].indexOf(v.province) >= 0 || v.province.indexOf(r[0]) >= 0) {
+    //           r[1] = v.totalScore;
+    //         }
+    //         this.data.data.push(r);
+    //       });
+    //     });
+    //     this.loader();
+    //     console.log('地图接受数据 end rows =', this.data.rows);
+    //   }
+    // }
   },
   data() {
     return {
@@ -181,6 +181,6 @@ export default {
 
 <style lang="scss" scoped>
 .map-container {
-
+  height: 100%;
 }
 </style>

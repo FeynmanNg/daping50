@@ -69,7 +69,7 @@
 
       <!-- 中 倒计时、地图 -->
       <my-dv-border12 height="100%" :weight="3" fill="rgba(255,255,255,0.05)">
-        <my-dv-loading v-if="loading"></my-dv-loading>
+        <!-- <my-dv-loading v-if="loading"></my-dv-loading> -->
         <div class="map-wrap">
           <map-comp :rank1Data="rank1Data"></map-comp>
         </div>
@@ -119,9 +119,10 @@
               <span class="total-score">答题进度榜</span>
             </my-dv-adorn7>
           </div>
-          <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length">
+          <!-- <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length"> -->
+          <div class="process-container">
             <!-- 最多支持显示 10 条 -->
-            <transition-group name="list-complete">
+            <!-- <transition-group name="list-complete">
               <div
                 v-for="(item, i) in provinceAnswerProgressData"
                 v-show="i < 10"
@@ -140,8 +141,8 @@
                   </span>
                 </span>
               </div>
-            </transition-group>
-            <!-- <div class="process">
+            </transition-group> -->
+            <div class="process">
               <span class="NO">NO.1</span>
               <span>福建省</span>
               <span class="line-wrap">
@@ -154,7 +155,7 @@
                   <span class="num">90%</span>
                 </span>
               </span>
-            </div> -->
+            </div>
             
             <!-- 科目说明 -->
             <div class="process-desc">
@@ -295,7 +296,7 @@
       else this.onShowInit();
 
       this.initTime();
-      this.init();
+      // this.init();
     },
     destroyed() { 
       Object.keys(this.interval).forEach(o => {
@@ -704,6 +705,9 @@
           height: 50%;
           &:first-child .rate {
             background: linear-gradient(90deg, #0033cc, #fc3367);
+            background-image: url("../../assets/img-team/team-jd-progress.png");
+            background-size: contain;
+            background-repeat: no-repeat;
           }
           &:last-child .rate {
             background: linear-gradient(90deg, #0033cc, #fec9ff);
@@ -712,8 +716,8 @@
             max-width: 80%;
             // todo 配置为数据驱动
             width: 100%;
-            border-top-right-radius: 15px;
-            border-bottom-right-radius: 15px;
+            // border-top-right-radius: 15px;
+            // border-bottom-right-radius: 15px;
           }
           .num {
             min-width: 20%;

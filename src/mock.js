@@ -219,3 +219,13 @@ export const rank1 = ({
   rankNo: 1, // 名次
   totalScore: 84 // 总分
 })
+
+
+// 地图
+export const mapData = () => {
+  return [
+    {
+      
+    }
+  ]
+}
