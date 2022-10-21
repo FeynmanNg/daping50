@@ -17,13 +17,14 @@
 
     ORG: '主办单位：厦门市美亚柏科信息股份有限公司', // 主办方
 
-    // 刷新延时 单位秒
+    // 刷新延时 单位毫秒
     REFRESH_STEPS: 1000 * 60 * 1,
+    REFRESH_STEPS_INTRODUCTION: 1000 * 15, // 选手介绍 15 秒
 
     // bus event name
     BUS_EVENT_COUNTDOWN: 'on-countdown',
 
-    PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF: 3 // 个人排名列表 各科的间隔宽度，数值越大 宽度越大
+    PERSON_RANK_LIST_WIDTH_DIFF: 3 // 个人排名列表 各科的间隔宽度，数值越大 宽度越大
 
   }
 

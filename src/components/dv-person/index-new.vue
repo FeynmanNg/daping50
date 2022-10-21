@@ -393,7 +393,8 @@
   import { getImageUrl } from '../../helper/image';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
-  const PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF = window.__GLOBAL__.PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF;
+  const PERSON_RANK_LIST_WIDTH_DIFF = window.__GLOBAL__.PERSON_RANK_LIST_WIDTH_DIFF;
+  const REFRESH_STEPS_INTRODUCTION = window.__GLOBAL__.REFRESH_STEPS_INTRODUCTION;
 
   export default {
     components: { initDialog },
@@ -423,7 +424,7 @@
           },
           playerIntroduction: {
             timer: null,
-            time: steps, // *分钟 间隔
+            time: REFRESH_STEPS_INTRODUCTION, // *分钟 间隔
             // time: 1000 * 2, // test 2秒 间隔
             value: 0, // 用来叠加，轮询阶段
             left: true // 轮询左边还是右边的列表
@@ -475,7 +476,7 @@
       // 长度分配，为列表布局所用
       lengthLeft() {
         const l = this.arrSub1.length;
-        const diff = l > 2 ? PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF : 0;
+        const diff = l > 2 ? PERSON_RANK_LIST_WIDTH_DIFF : 0;
         const no = 15 - diff, // 名次
         name = 15 - diff, // 参赛者
         area = 15 - diff, // 地区
@@ -485,7 +486,7 @@
       },
       lengthRight() {
         const l = this.arrSub2.length;
-        const diff = l > 2 ? PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF : 0;
+        const diff = l > 2 ? PERSON_RANK_LIST_WIDTH_DIFF : 0;
         const no = 15 - diff, // 名次
         name = 15 - diff, // 参赛者
         area = 15 - diff, // 地区
@@ -988,7 +989,7 @@ $totalContentItemHeight: 50px;
       height: $heightCommon;
       line-height: $heightCommon;
       color: #fff;
-      margin: 10px 0;
+      margin: 12px 0 0;
       // background: $listBg;
       background-image: url("../../assets/img-common/top10.png");
       background-size: 103% 100%;
@@ -1005,8 +1006,9 @@ $totalContentItemHeight: 50px;
       }
 
       &:nth-child(1) {
+        margin: 0;
         background-image: url("../../assets/img-common/top1.png");
-        background-size: 103% 100%;
+        background-size: 103% 120%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1016,8 +1018,9 @@ $totalContentItemHeight: 50px;
         }
       }
       &:nth-child(2) {
+        margin: 0;
         background-image: url("../../assets/img-common/top2.png");
-        background-size: 103% 100%;
+        background-size: 103% 120%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1027,9 +1030,10 @@ $totalContentItemHeight: 50px;
         }
       }
       &:nth-child(3) {
+        margin: 0;
         // 欠缺图片
         background-image: url("../../assets/img-common/top3.png");
-        background-size: 103% 100%;
+        background-size: 103% 120%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
