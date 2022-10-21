@@ -110,7 +110,7 @@
                 v-for="(person, i) in listLeft"
                 v-show="i < 15"
                 :key="person.userId">
-                <span :style="{ 'width': `${lengthLeft.no}%` }">{{person.rankNo - 3 ? person.rankNo : ''}}</span>
+                <span :style="{ 'width': `${lengthLeft.no}%` }">{{i > 2 ? person.rankNo : ''}}</span>
                 <span class="name" :style="{ 'width': `${lengthLeft.name}%` }">{{person.name}}</span>
                 <span class="province" :style="{ 'width': `${lengthLeft.area}%` }">{{person.province}}</span>
                 <span
@@ -351,7 +351,7 @@
                 v-for="(person, i) in listRight"
                 v-show="i < 15"
                 :key="person.userId">
-                <span :style="{ 'width': `${lengthRight.no}%` }">{{person.rankNo - 3 ? person.rankNo : ''}}</span>
+                <span :style="{ 'width': `${lengthRight.no}%` }">{{i > 2 ? person.rankNo : ''}}</span>
                 <span class="name" :style="{ 'width': `${lengthRight.name}%` }">{{person.name}}</span>
                 <span class="province" :style="{ 'width': `${lengthRight.area}%` }">{{person.province}}</span>
                 <span
@@ -984,10 +984,10 @@ $totalContentItemHeight: 50px;
       }
     }
     .content {
-      $heightCommon: 30px;
+      $heightCommon: 33px;
       display: flex;
       height: $heightCommon;
-      line-height: $heightCommon;
+      // line-height: $heightCommon;
       color: #fff;
       margin: 12px 0 0;
       // background: $listBg;

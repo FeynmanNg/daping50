@@ -48,7 +48,7 @@
         <div
           v-for="item in rank"
           :key="item.province"
-          :class="{ base: 1, [item.provincesClassName]: 1 }"
+          :class="{ base: 1, [item.provinceClassName]: 1 }"
           >
           <div v-for="rt in realTimeDynamicData" :key="rt.province">
             <div
@@ -130,9 +130,11 @@ export default {
   },
   watch: {
     rank1Data() {
+      console.log('地图 全国 watch', this.rank1Data);
       this.validForm() && this.assembleRank();
     },
     realTimeDynamicData() {
+      console.log('地图 动态 watch', this.realTimeDynamicData);
       this.validForm() && this.assembleBar();
     }
   },
@@ -147,6 +149,7 @@ export default {
   mounted() {
     console.log('地图 全国', this.rank1Data);
     console.log('地图 动态', this.realTimeDynamicData);
+    console.log('预设地图', this.provinces, this.provincesClassName);
     this.init();
   },
   methods: {
@@ -169,7 +172,8 @@ export default {
             value: exist ? exist.totalScore : -1,
             rankNo: exist ? exist.rankNo : -1
           }
-        })
+        });
+        console.log('组装完成 rank', this.rank);
       }
     },
     assembleBar() {
@@ -185,7 +189,8 @@ export default {
             competitionId: exist.competitionId, // 用来展示是 哪个比赛
             competitionType: this.validCompetitionType(exist.competitionId)
           }
-        })
+        });
+        console.log('组装完成 realTimeDynamic', this.realTimeDynamic);
       }
     },
     // 判断省 是否存在

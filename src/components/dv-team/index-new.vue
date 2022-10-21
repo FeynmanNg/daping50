@@ -60,7 +60,7 @@
                   v-show="i < 15"
                   :key="item.areaCode"
                   class="content-item list-complete-item">
-                  <span>{{item.rankNo}}</span>
+                  <span>{{i > 2 ? item.rankNo : ''}}</span>
                   <span>{{item.province}}</span>
                   <span>{{getValue(item.competitionScoreMap, form.subject1) || 0}}</span>
                   <span>{{getValue(item.competitionScoreMap, form.subject2) || 0}}</span>
@@ -794,8 +794,9 @@
           }
           .rate {
             max-width: 80%;
+            min-width: 10%;
             // todo 配置为数据驱动
-            width: 100%;
+            // width: 100%;
             // border-top-right-radius: 15px;
             // border-bottom-right-radius: 15px;
             background-size: 100% 95%;
