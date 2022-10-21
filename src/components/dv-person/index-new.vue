@@ -393,6 +393,7 @@
   import { getImageUrl } from '../../helper/image';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
+  const PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF = window.__GLOBAL__.PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF;
 
   export default {
     components: { initDialog },
@@ -474,7 +475,7 @@
       // 长度分配，为列表布局所用
       lengthLeft() {
         const l = this.arrSub1.length;
-        const diff = l > 2 ? 5 : 0;
+        const diff = l > 2 ? PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF : 0;
         const no = 15 - diff, // 名次
         name = 15 - diff, // 参赛者
         area = 15 - diff, // 地区
@@ -484,7 +485,7 @@
       },
       lengthRight() {
         const l = this.arrSub2.length;
-        const diff = l > 2 ? 5 : 0;
+        const diff = l > 2 ? PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF : 0;
         const no = 15 - diff, // 名次
         name = 15 - diff, // 参赛者
         area = 15 - diff, // 地区
@@ -762,6 +763,12 @@ $totalContentItemHeight: 50px;
   align-items: center;
 }
 
+@mixin wordBreak {
+  overflow: hidden;
+  white-space: nowrap; 
+  text-overflow:ellipsis;
+}
+
 // 省略号
 .ellipsis {
   overflow: hidden;
@@ -971,6 +978,9 @@ $totalContentItemHeight: 50px;
       display: flex;
       height: 30px;
       line-height: 30px;
+      span {
+        @include wordBreak;
+      }
     }
     .content {
       $heightCommon: 30px;
@@ -985,12 +995,6 @@ $totalContentItemHeight: 50px;
       background-repeat: no-repeat;
       background-position: center;
 
-      // 在答题
-      span.active {
-        // background: $lightBlueBg;
-        // color: #fff;
-      }
-
       // 前三名样式
       &:nth-child(1), &:nth-child(2), &:nth-child(3) {
         $heightTop3: 60px;
@@ -998,14 +1002,11 @@ $totalContentItemHeight: 50px;
         line-height: $heightTop3;
         font-size: 20px;
         // color: $yellowFont;
-        span:first-child {
-          // font-size: 30px;
-        }
       }
 
       &:nth-child(1) {
         background-image: url("../../assets/img-common/top1.png");
-        background-size: 100% 100%;
+        background-size: 103% 100%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1016,7 +1017,7 @@ $totalContentItemHeight: 50px;
       }
       &:nth-child(2) {
         background-image: url("../../assets/img-common/top2.png");
-        background-size: 100% 100%;
+        background-size: 103% 100%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1028,7 +1029,7 @@ $totalContentItemHeight: 50px;
       &:nth-child(3) {
         // 欠缺图片
         background-image: url("../../assets/img-common/top3.png");
-        background-size: 100% 100%;
+        background-size: 103% 100%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1048,15 +1049,14 @@ $totalContentItemHeight: 50px;
 
       // 省份
       .province {
-        overflow: hidden;
-        white-space: nowrap; 
-        text-overflow:ellipsis;
+        @include wordBreak;
       }
 
       // 名字
       .name {
         // color: $yellowFont;
         font-weight: bold;
+        @include wordBreak;
       }
       // 总分
       &>span:last-child {

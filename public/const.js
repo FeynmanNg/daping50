@@ -21,7 +21,9 @@
     REFRESH_STEPS: 1000 * 60 * 1,
 
     // bus event name
-    BUS_EVENT_COUNTDOWN: 'on-countdown'
+    BUS_EVENT_COUNTDOWN: 'on-countdown',
+
+    PERSON_RANK_LIST_SUBJECTS_WIDTH_DIFF: 3 // 个人排名列表 各科的间隔宽度，数值越大 宽度越大
 
   }
 
