@@ -1,5 +1,5 @@
 <template>
-  <my-dv-page v-bind="$attrs">
+  <my-dv-page width="100%" height="100%">
     <div class="bg-container">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
     </div>
@@ -201,7 +201,6 @@
                     <div class="img"></div>
                     <div class="name-rank">
                       <div class="name">哈凯文</div>
-                      <div class="rank">排名第135</div>
                     </div>
                     <div class="time-correct">
                       <div class="time">13:41:30</div>
@@ -215,7 +214,6 @@
                     <div class="img"></div>
                     <div class="name-rank">
                       <div class="name">哈凯文</div>
-                      <div class="rank">排名第135</div>
                     </div>
                     <div class="time-correct">
                       <div class="time">13:41:30</div>
@@ -964,10 +962,12 @@ $totalContentItemHeight: 50px;
 
   // 列表
   .list-container {
+    height: calc(100% - 210px);
+    overflow-y: auto;
     font-weight: bold;
     font-size: 20px;
     text-align: center;
-    padding-top: 10px;
+    // padding-top: 10px;
     // 分割线
     .dash {
       height: 1px;
@@ -1014,7 +1014,8 @@ $totalContentItemHeight: 50px;
           // todo url
           background-image: url("../../assets/img-common/top1-icon.png");
           // background-position: center;
-          background-size: cover;
+          background-size: 90% 100%;
+          background-repeat: no-repeat;
         }
       }
       &:nth-child(2) {
@@ -1026,7 +1027,8 @@ $totalContentItemHeight: 50px;
           // todo url
           background-image: url("../../assets/img-common/top2-icon.png");
           // background-position: center;
-          background-size: cover;
+          background-size: 90% 100%;
+          background-repeat: no-repeat;
         }
       }
       &:nth-child(3) {
@@ -1039,7 +1041,8 @@ $totalContentItemHeight: 50px;
           // todo url
           background-image: url("../../assets/img-common/top3-icon.png");
           // background-position: center;
-          background-size: cover;
+          background-size: 90% 100%;
+          background-repeat: no-repeat;
         }
       }
       

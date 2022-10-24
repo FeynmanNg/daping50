@@ -24,14 +24,14 @@
       <el-form-item label="比赛A">
         <el-input v-model="form.subject1" name="subject1" label="比赛A">
           <template slot="append">
-            <el-input v-model="form.subject1ids" placeholder="比赛A IDs（以英文逗号分割，如 1001,1002）" style="width: 500px;"></el-input>
+            <el-input v-model="form.subject1ids" placeholder="比赛A IDs（以英文逗号分割，如 1001,1002）" style="width: 40vw;"></el-input>
           </template>
         </el-input>
       </el-form-item>
       <el-form-item label="比赛B">
         <el-input v-model="form.subject2" name="subject2" label="比赛B">
           <template slot="append">
-            <el-input v-model="form.subject2ids" placeholder="比赛B IDs（以英文逗号分割，如 1001,1002）" style="width: 500px;"></el-input>
+            <el-input v-model="form.subject2ids" placeholder="比赛B IDs（以英文逗号分割，如 1001,1002）" style="width: 40vw;"></el-input>
           </template>
         </el-input>
       </el-form-item>

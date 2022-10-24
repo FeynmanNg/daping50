@@ -1,5 +1,5 @@
 <template>
-  <my-dv-page v-bind="$attrs">
+  <my-dv-page width="100%" height="100%">
     <div class="bg-container">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
     </div>
@@ -68,10 +68,10 @@
                 </div>
                 <!-- demo -->
                 <!-- <div
-                  v-for="(item) in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]"
+                  v-for="(item, i) in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]"
                   :key="item"
                   class="content-item list-complete-item">
-                  <span>{{item}}</span>
+                  <span>{{i > 2 ? item : ''}}</span>
                   <span>福建省demo</span>
                   <span>33</span>
                   <span>44</span>
@@ -623,7 +623,7 @@
   }
   // 总分榜
   .list-container {
-    height: calc(100% - 52px);
+    height: calc(100% - 70px);
     overflow-y: auto;
     margin-top: 70px;
 
@@ -754,7 +754,7 @@
     $processW1: 15%; // NO.* 的宽度
     $processW2: 17%; // 省份的宽度 + margin 左右 1%
     $processW3: 65%; // 进度条和百分数的宽度
-    $h: 37px;
+    $h: 30px;
     // 间距
     .process { margin: 3px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
     .process {

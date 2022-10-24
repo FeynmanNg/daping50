@@ -1,5 +1,5 @@
 <template>
-  <my-dv-page v-bind="$attrs">
+  <my-dv-page width="100%" height="100%">
     <my-dv-starry :opacity="0.4"></my-dv-starry>
 
     <my-dv-header5>

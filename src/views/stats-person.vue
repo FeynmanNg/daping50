@@ -1,13 +1,12 @@
 <template>
   <div class="container">
-    <Dv-person target="parent" lock></Dv-person>
+    <Dv-person></Dv-person>
   </div>
 </template>
 
 <script>
 // import DvPerson from '@/components/dv-person'
 import DvPerson from '@/components/dv-person/index-new'
-// import DvPerson from '@/components/dv-team'
 export default {
   components: {
     DvPerson

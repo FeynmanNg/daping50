@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Dv-team target="parent" lock></Dv-team>
+    <Dv-team></Dv-team>
   </div>
 </template>
 
