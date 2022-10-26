@@ -18,8 +18,14 @@
     ORG: '主办单位：厦门市美亚柏科信息股份有限公司', // 主办方
 
     // 刷新延时 单位毫秒
-    REFRESH_STEPS: 1000 * 60 * 1,
-    REFRESH_STEPS_INTRODUCTION: 1000 * 15, // 选手介绍 15 秒
+    REFRESH_STEPS: 1000 * 5 * 1,
+    REFRESH_STEPS_INTRODUCTION: 1000 * 10, // 选手介绍
+    REFRESH_STEPS_ANSWER_PROFILE: 1000 * 5, // 答题概况
+    REFRESH_STEPS_RANK: 1000 * 5, // 单人排名列表
+    REFRESH_STEPS_REALTIME_DYNAMIC: 1000 * 5, // 实时动态
+    // 队伍页
+    REFRESH_STEPS_DT: 1000 * 5, // 答题进度榜
+    REFRESH_STEPS_COMPETITION_PROVINCE_RANK: 1000 * 5, // 队伍排名列表（总分榜）
 
     // bus event name
     BUS_EVENT_COUNTDOWN: 'on-countdown',

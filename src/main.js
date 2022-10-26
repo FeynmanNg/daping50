@@ -38,6 +38,8 @@ import {getOptionsMap, formatFilterInit} from '@/helper/dict-management/index'
 // // 全局（字典）过滤器
 // import formatFilter from '@/helper/filter';
 
+import scroll from 'vue-seamless-scroll';
+
 /**
  * 主应用增强
  */
@@ -62,6 +64,9 @@ const store = new Vuex.Store(vuexOptions)
 
 // 注册全局过滤器‘formFilter’
 Vue.filter('formatFilter', formatFilterInit(store));
+
+// 全局注册滚动组件
+Vue.use(scroll);
 
 
 /**

@@ -1,11 +1,11 @@
-(function (global) {
+;(function (global) {
   global.__MY_CONFIG__ = {
 
     // 接口服务
     // API_HOST: 'http://127.0.0.1:3087/api'
-    API_HOST: 'http://172.19.50.37:8550/api'
+    API_HOST: 'http://39.102.197.53:8550/api' // 阿里云
   }
 
 
 
-})(window)
+})(window);

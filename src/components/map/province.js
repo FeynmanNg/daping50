@@ -531,7 +531,7 @@ export default {
 
   // 北京
   beijing: {
-    top: '210px',
+    top: '190px', // 防止遮蔽，向上稍微偏移 210px 为准确地点
     left: '440px',
     'bar-box': {
       left: '160px',

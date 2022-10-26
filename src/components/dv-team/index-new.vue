@@ -1,8 +1,9 @@
 <template>
-  <my-dv-page width="100%" height="100%">
-    <div class="bg-container">
+  <!-- <my-dv-page width="100%" height="100%"> -->
+  <my-dv-page v-bind="$attrs">
+    <!-- <div class="bg-container">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
-    </div>
+    </div> -->
     <div class="bg-container" style="background-size: 100% 100%">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
       <my-dv-box layout
@@ -13,6 +14,7 @@
                   x-align="center">
         <my-dv-box layout :gap="10" :weight="2" height="100%"></my-dv-box>
         <my-dv-box layout :weight="3" height="100%">
+          <div class="org">{{ORG}}</div>
           <div class="map-info-container">
             <map-comp
               v-if="form"
@@ -26,12 +28,17 @@
     </div>
 
     <my-dv-header5>
-      <span class="competitors-total">参赛总人数：{{totalPeople || 0}}人</span>
-      <my-dv-title type="primary" strong shadow x-align="center">{{title}}</my-dv-title>
+      <span class="competitors-total">参赛总人数：<span>{{totalPeople || 0}}</span>&nbsp;人</span>
+      <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title>
       <span class="date">
-        <span>{{formatDateStr}}&nbsp;</span>
-        <span v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
-        <span>&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
+        <!-- <span>{{formatDateStr}}&nbsp;</span> -->
+        <span>
+          <span class="num">{{formatDateStr.y}}</span><span class="zh">&nbsp;年&nbsp;</span>
+          <span class="num">{{formatDateStr.M}}</span><span class="zh">&nbsp;月&nbsp;</span>
+          <span class="num">{{formatDateStr.d}}</span><span class="zh">&nbsp;日&nbsp;</span>
+        </span>
+        <span class="num" v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
+        <span class="zh">&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
       </span>
     </my-dv-header5>
 
@@ -40,7 +47,7 @@
                x-align="center">
       <!-- 左侧 总分榜 -->
       <my-dv-box layout :gap="10" :weight="2" height="100%">
-        <my-dv-border12 class="zfb-bg" width="100%" fill="rgba(255,255,255,0.05)">
+        <my-dv-box class="zfb-bg" width="100%" fill="rgba(255,255,255,0.05)">
           <div class="list-container">
             <!-- 表头 -->
             <div class="header">
@@ -82,12 +89,12 @@
             </div>
           </div>
           <my-dv-loading v-if="loading"></my-dv-loading>
-        </my-dv-border12>
+        </my-dv-box>
 
       </my-dv-box>
 
       <!-- 中 倒计时 -->
-      <my-dv-border12 height="100%" :weight="3" fill="rgba(255,255,255,0.05)">
+      <my-dv-box height="100%" :weight="3" fill="rgba(255,255,255,0.05)">
         <my-dv-loading v-if="loading"></my-dv-loading>
         <!-- 倒计时 和 浮框 -->
         <div
@@ -128,11 +135,11 @@
             </transition-group>
           </div> -->
         </div>
-      </my-dv-border12>
+      </my-dv-box>
 
       <!-- 右侧 答题进度、实时动态 -->
       <my-dv-box layout :gap="10" :weight="2" height="100%">
-        <my-dv-border12 class="dt-bg" width="100%" height="70%" fill="rgba(255,255,255,0.05)">
+        <my-dv-box class="dt-bg" width="100%" height="70%" fill="rgba(255,255,255,0.05)">
           <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length">
           <!-- <div class="process-container"> -->
             <!-- 科目说明 -->
@@ -151,7 +158,7 @@
               <div
                 v-for="(item, i) in provinceAnswerProgressData"
                 v-show="i < 10"
-                :key="item.areaCode + `_${i}`"
+                :key="item.areaCode"
                 class="process list-complete-item">
                 <span class="NO">NO.{{item.rankNo}}</span>
                 <span>{{item.province}}</span>
@@ -167,52 +174,32 @@
                 </span>
               </div>
             </transition-group>
-            <!-- <div class="process" v-for="(item, i) in [1,2,3,4,5,6,7,8,9,10]" :key="item">
-              <span class="NO">NO.{{i+1}}</span>
-              <span>福建省</span>
-              <span class="line-wrap">
-                <span class="line">
-                  <span class="rate"></span>
-                  <span class="num">80%</span>
-                </span>
-                <span class="line">
-                  <span class="rate"></span>
-                  <span class="num">90%</span>
-                </span>
-              </span>
-            </div> -->
           </div>
-        </my-dv-border12>
-        <my-dv-border12 class="ss-bg" width="100%" height="30%" fill="rgba(255,255,255,0.05)">
+        </my-dv-box>
+        <my-dv-box class="ss-bg" width="100%" height="30%" fill="rgba(255,255,255,0.05)">
           <div class="rt-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
-          <!-- <div class="rt-container"> -->
-            <transition-group name="list-complete">
-              <!-- demo -->
-              <!-- <div class="rt list-complete-item" v-for="(item) in [1,2,3,4,5,6,7,8]" :key="item">
-                <div class="rt-time">12:22:33</div>
-                <div class="rt-content">
-                  <span class="type left" :class="{ left: item % 2 === 0, right: item % 2 === 1 }">[窝点勘查]</span>
-                  <span class="name-province">周星星-广东省</span>
-                  <span class="hit">
-                    已连续答对
-                    <span class="num">4</span>
-                    题！
-                  </span>
+            <vue-seamless-scroll
+                  class="warp"
+                  :data="realTimeDynamicData"
+                  :class-option="classOption"
+                  ref="seamlessScroll">
+              <transition-group name="list-complete">
+                <div v-for="(item) in realTimeDynamicData" :key="item.userId" class="rt list-complete-item">
+                  <div class="rt-time">{{item.recordTime}}</div>
+                  <div class="rt-content">
+                    <span class="type left" :class="{ left: item % 2 === 0, right: item % 2 === 1 }">
+                      [{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}]
+                    </span>
+                    <span class="name-province">{{item.userName}}-{{item.province}}</span>
+                    <span class="hit">
+                      已连续答对&nbsp;<span class="num">{{item.continueRight}}</span>&nbsp;题！
+                    </span>
+                  </div>
                 </div>
-              </div> -->
-
-              <div v-for="(item) in realTimeDynamicData" :key="item.userId" class="rt list-complete-item">
-                <div class="rt-time">{{item.recordTime}}</div>
-                <div class="rt-content">
-                  【{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}】
-                  {{item.userName}}
-                  【{{item.province}}】
-                  已连续答对 {{item.continueRight}} 题！
-                </div>
-              </div>
-            </transition-group>
+              </transition-group>
+            </vue-seamless-scroll>
           </div>
-        </my-dv-border12>
+        </my-dv-box>
       </my-dv-box>
     </my-dv-box>
     <!-- 表单 -->
@@ -229,8 +216,8 @@
   import coordinates from '$ui/dv/utils/coordinates';
   import solarLunar from 'solarlunar';
   import initDialog from '../init-dialog';
-  // import mapComp from '../map';
-  import mapComp from '../map/index-new';
+  // import mapComp from '../map/index-new';
+  import mapComp from '../map/index-new-1';
   import storage from '@/helper/storage';
   // import { onPause, onStart, onReset } from '@/helper/bus';
   import {
@@ -238,17 +225,23 @@
     provinceAnswerProgress,
     realTimeDynamic,
     competitionProvinceRank
-  } from '$my/code/api/dv';
+  // } from '$my/code/api/dv';
+  } from '@/mock'; // todo
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
+  const REFRESH_STEPS_DT = window.__GLOBAL__.REFRESH_STEPS_DT;
+  const REFRESH_STEPS_COMPETITION_PROVINCE_RANK = window.__GLOBAL__.REFRESH_STEPS_COMPETITION_PROVINCE_RANK;
+  const REFRESH_STEPS_REALTIME_DYNAMIC = window.__GLOBAL__.REFRESH_STEPS_REALTIME_DYNAMIC;
+  const ORG = window.__GLOBAL__.ORG;
 
   export default {
     components: { mapComp, initDialog },
     data() {
       const form = storage.getForm();
       const timeRange = form.timeRange || [];
-      const steps = REFRESH_STEPS; // 刷新频率 *分钟
+      const steps = REFRESH_STEPS; // 刷新频率 
       return {
+        ORG,
         form,
         steps,
         title: form.title || '',
@@ -274,35 +267,47 @@
           date: { timer: null },
           realTimeDynamic: {
             timer: null,
-            time: steps // *分钟 间隔
+            time: REFRESH_STEPS_REALTIME_DYNAMIC // 间隔
             // time: 1000 * 2 // test 2秒 间隔
           },
           competitionProvinceRank: {
             timer: null,
-            time: steps // *分钟 间隔
+            time: REFRESH_STEPS_COMPETITION_PROVINCE_RANK // 间隔
             // time: 1000 * 2 // test 2秒 间隔
           },
           provinceAnswerProgress: {
             timer: null,
-            time: steps // *分钟 间隔
+            time: REFRESH_STEPS_DT // 间隔
             // time: 1000 * 2 // test 2秒 间隔
           }
         },
         totalPeople: 0, // 参赛总人数
         realTimeDynamicData: [], // 实时动态数据
         rank1Data: [], // 总分榜数据
-        provinceAnswerProgressData: [] // 答题进度
+        provinceAnswerProgressData: [], // 答题进度
+        // 动态列表 滚动设置
+        classOption: {
+          // waitTime: REFRESH_STEPS_REALTIME_DYNAMIC, // ms
+          // singleHeight: 145
+          limitMoveNum: 6,
+          autoPlay: true,
+          hoverStop: false
+        }
       }
     },
     computed: {
       dateStr() {
-        return dateFormat(new Date(), 'yyyy-MM-dd')
+        return dateFormat(new Date(), 'yyyy-MM-dd');
       },
       formatDateStr() {
-        return dateFormat(new Date(), 'yyyy年MM月dd日')
+        // return dateFormat(new Date(), 'yyyy年MM月dd日');
+        const y = dateFormat(new Date(), 'yyyy');
+        const M = dateFormat(new Date(), 'MM');
+        const d = dateFormat(new Date(), 'dd');
+        return { y, M, d };
       },
       dayStr() {
-        return (`星期${['日', '一', '二', '三', '四', '五', '六'][new Date().getDay()]}`)
+        return (`星期${['日', '一', '二', '三', '四', '五', '六'][new Date().getDay()]}`);
       },
       lunar() {
         const arr = this.dateStr.split('-');
@@ -434,7 +439,6 @@
         provinceAnswerProgress(query).then(res => {
           console.log('省份答题进度数据', res);
           this.provinceAnswerProgressData = res;
-          console.log('省份答题进度数据', this.provinceAnswerProgressData);
         }).catch(e => {
           console.log(e);
         });
@@ -442,7 +446,6 @@
           provinceAnswerProgress(query).then(res => {
             console.log('省份答题进度数据', res);
             this.provinceAnswerProgressData = res;
-            console.log('省份答题进度数据', this.provinceAnswerProgressData);
           }).catch(e => {
             console.log(e);
           });
@@ -452,14 +455,14 @@
       realTimeDynamic() {
         realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
-          this.realTimeDynamicData = res; // todo
+          this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
         }).catch(e => {
           console.log(e);
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
           realTimeDynamic().then(res => {
             console.log('实时动态数据', res);
-            this.realTimeDynamicData = res; // todo
+            this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
           }).catch(e => {
             console.log(e);
           });
@@ -470,19 +473,17 @@
         const competitionMap = {
           [this.form.subject1]: this.form.subject1ids,
           [this.form.subject2]: this.form.subject2ids
-        }
+        };
         competitionProvinceRank({ competitionMap }).then(res => {
-          console.log('总分榜', res);
+          // console.log('总分榜', res);
           this.rank1Data = res; // todo
-          console.log('总分榜', this.rank1Data);
         }).catch(e => {
           console.log(e);
         });
         this.interval.competitionProvinceRank.timer = setInterval(() => {
           competitionProvinceRank({ competitionMap }).then(res => {
-            console.log('总分榜', res);
+            // console.log('总分榜', res);
             this.rank1Data = res; // todo
-            console.log('总分榜', this.rank1Data);
           }).catch(e => {
             console.log(e);
           });
@@ -514,13 +515,24 @@
     position: absolute;
     top: 5px;
     left: 15px;
-    font-size: 28px;
+    font-size: 20px;
+    color: #90bcff;
+    span {
+      color: #fff;
+      font-weight: bold;
+    }
   }
   .date {
     position: absolute;
     top: 5px;
     right: 15px;
-    font-size: 28px;
+    font-size: 20px;
+    .zh {
+      color: #90bcff;
+    }
+    .num {
+      color: #fff;
+    }
   }
   .my-dv-page {
     background-image: url("~$ui/assets/bg/03.jpg");
@@ -537,6 +549,14 @@
     background-position: bottom;
     position: absolute;
     bottom: 0;
+    .org {
+      width: 100%;
+      position: absolute;
+      bottom: 10px;
+      color: #799ec7;
+      text-align: center;
+      font-size: 18px;
+    }
   }
 
   // 倒计时
@@ -754,7 +774,8 @@
     $processW1: 15%; // NO.* 的宽度
     $processW2: 17%; // 省份的宽度 + margin 左右 1%
     $processW3: 65%; // 进度条和百分数的宽度
-    $h: 30px;
+    $h: 38px;
+    // $h: calc(((100% - 20px) / 10)px);
     // 间距
     .process { margin: 3px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
     .process {
@@ -823,17 +844,17 @@
       &>span:nth-child(3) { // 进度条
         width: $processW3;
       }
-      &:nth-child(2) { // 第1名
+      &:nth-child(1) { // 第1名
         .NO { // NO.*
           background-image: url("../../assets/img-team/NO1.png");
         }
       }
-      &:nth-child(3) { // 第2名
+      &:nth-child(2) { // 第2名
         .NO { // NO.*
           background-image: url("../../assets/img-team/NO2.png");
         }
       }
-      &:nth-child(4) { // 第3名
+      &:nth-child(3) { // 第3名
         .NO { // NO.*
           background-image: url("../../assets/img-team/NO3.png");
         }
@@ -888,13 +909,15 @@
     .rt {
       padding: 10px 20px;
       line-height: 25px;
-      border-bottom: 1px solid;
+      // border-bottom: 1px solid;
       .rt-time {
         font-size: 20px;
         font-weight: bold;
       }
       .rt-content {
         font-size: 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid;
         // @include center;
 
         .type {
@@ -908,7 +931,7 @@
         .name-province {
           color: #fff;
           font-weight: bold;
-          margin: 0 40px;
+          margin: 0 30px;
         }
         .hit {
           color: #afcfff;

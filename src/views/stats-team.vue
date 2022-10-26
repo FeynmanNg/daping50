@@ -19,6 +19,7 @@ export default {
     background: #fff !important;
     min-height: 100vh;
     height: 100%;
+    overflow: hidden;
   }
 </style>
 <style lang="scss" scoped>

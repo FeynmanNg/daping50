@@ -1,16 +1,24 @@
 <template>
-  <my-dv-page width="100%" height="100%">
+  <!-- <my-dv-page width="100vw" height="100vh" v-bind="$attrs"> -->
+  <my-dv-page v-bind="$attrs">
     <div class="bg-container">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
+      <!-- <my-dv-starry :opacity="0.4" width="100vw" height="100vh"></my-dv-starry> -->
+      <div class="org">{{ORG}}</div>
     </div>
 
     <my-dv-header5>
-      <span class="competitors-total">参赛总人数：{{totalPeople || 0}}人</span>
+      <span class="competitors-total">参赛总人数：<span>{{totalPeople || 0}}</span>&nbsp;人</span>
       <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title>
       <span class="date">
-        <span>{{formatDateStr}}&nbsp;</span>
-        <span v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
-        <span>&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
+        <!-- <span>{{formatDateStr}}&nbsp;</span> -->
+        <span>
+          <span class="num">{{formatDateStr.y}}</span><span class="zh">&nbsp;年&nbsp;</span>
+          <span class="num">{{formatDateStr.M}}</span><span class="zh">&nbsp;月&nbsp;</span>
+          <span class="num">{{formatDateStr.d}}</span><span class="zh">&nbsp;日&nbsp;</span>
+        </span>
+        <span class="num" v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
+        <span class="zh">&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
       </span>
     </my-dv-header5>
 
@@ -19,7 +27,7 @@
                x-align="center">
       <!-- 左侧 窝点勘察 -->
       <my-dv-box layout :gap="10" height="100%">
-        <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)">
+        <!-- <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)"> -->
           <div class="gaikuang">
             <div class="top">
               <!-- demo -->
@@ -90,21 +98,6 @@
             <!-- 表内容 -->
             <!-- 前10名 -->
             <transition-group name="list-complete">
-              <!-- demo -->
-              <!-- <div
-                class="content list-complete-item"
-                :class="{ 'content-last': i >= 10 }"
-                v-for="(item, i) in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]"
-                :key="item">
-                <span :style="{ 'width': `${lengthLeft.no}%` }">{{i > 2 ? i : ''}}</span>
-                <span :style="{ 'width': `${lengthLeft.name}%` }">周星星</span>
-                <span :style="{ 'width': `${lengthLeft.area}%` }">广东省</span>
-                <span :style="{ 'width': `${lengthLeft.arr}%` }">88</span>
-                <span :style="{ 'width': `${lengthLeft.arr}%` }">88</span>
-                <span :style="{ 'width': `${lengthLeft.total}%` }">88</span>
-              </div> -->
-              
-
               <div
                 :class="{ 'content': 1, 'list-complete-item': 1, 'content-last': i >= 10 }"
                 v-for="(person, i) in listLeft"
@@ -124,12 +117,12 @@
             <!-- <div class="dash" v-show="listLeft.length > 10"></div> -->
             <!-- 10名 以后 -->
           </div><!-- list-container end -->
-        </my-dv-border12>
+        <!-- </my-dv-border12> -->
 
       </my-dv-box>
 
       <!-- 中 选手介绍 -->
-      <my-dv-border12 height="100%" :weight="1" fill="rgba(255,255,255,0.05)">
+      <!-- <my-dv-border12 height="100%" :weight="1" fill="rgba(255,255,255,0.05)"> -->
         <my-dv-loading v-if="loading"></my-dv-loading>
         <my-dv-box layout direction="column" top="20px" width="100%">
           <my-dv-box height="100px">
@@ -154,14 +147,14 @@
               </div>
             </div>
             <!-- 介绍 -->
-            <div class="introduction-container"  v-if="playerIntroductionData && playerIntroductionData.length">
+            <div class="introduction-container"  v-if="playerIntroductionData">
             <!-- <div class="introduction-container"> -->
               <div class="title"></div>
               <div class="introduction-content">
                 <div class="left">
                   <div class="image-wrap">
                     <!-- 图片 -->
-                    <img :src="getImageUrl(playerIntroductionData[0].userId)" style="width: 100%; height: 100%" />
+                    <img :src="getImageUrl(playerIntroductionData.userId)" style="width: 100%; height: 100%" />
                   </div>
                 </div>
                 <div class="right">
@@ -173,18 +166,18 @@
                     </span> -->
 
                     <span>
-                      <span>{{playerIntroductionData[0].name}}</span>
-                      <span>{{playerIntroductionData[0].province}}</span>
+                      <span>{{playerIntroductionData.name}}</span>
+                      <span>{{playerIntroductionData.province}}</span>
                     </span>
                   </div>
                   <div class="common">
                     <p>人员简介：</p>
-                    <p>{{playerIntroductionData[0].personnel}}</p>
+                    <p>{{playerIntroductionData.personnel}}</p>
                     <!-- <p>人员简介人员简介人员简介人员简介</p> -->
                   </div>
                   <div class="common">
                     <p>比赛宣言：</p>
-                    <p>{{playerIntroductionData[0].competitionDeclaration}}</p>
+                    <p>{{playerIntroductionData.competitionDeclaration}}</p>
                     <!-- <p>比赛宣言比赛宣言比赛宣言比赛宣言比赛宣言</p> -->
                   </div>
                 </div>
@@ -193,6 +186,10 @@
             <!-- 浮框 -->
             <div class="float-container">
               <!-- 窝点勘察 -->
+            <vue-seamless-scroll
+                  :data="realTimeDynamicData"
+                  :class-option="classOption"
+                  ref="seamlessScroll">
               <transition-group name="list-complete" v-if="realTimeDynamicData && realTimeDynamicData.length">
               <!-- <transition-group name="list-complete"> -->
                 <!-- demo -->
@@ -247,15 +244,16 @@
                   <div class="type">{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}</div>
                 </div>
               </transition-group>              
+            </vue-seamless-scroll>
             </div>
           </my-dv-box>
         </my-dv-box>
-      </my-dv-border12>
+      <!-- </my-dv-border12> -->
 
       <!-- 右侧 检查鉴定 -->
       <my-dv-box layout :gap="10" height="100%">
         <my-dv-loading v-if="loading"></my-dv-loading>
-        <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)">
+        <!-- <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)"> -->
           <div class="gaikuang gaikuang-right">
             <div class="top">
               <!-- demo -->
@@ -277,7 +275,7 @@
                 :class="{
                   'kemu': 1, 'name': 1,
                   'active': (interval.answerProfile.value2 + 1) % arrSub2.length === i,
-                  'inactive': answerProfileData1.onlineNumber === 0
+                  'inactive': answerProfileData2.onlineNumber === 0
                 }">
                 {{sub.name}}
               </div>
@@ -286,7 +284,7 @@
               <div class="left">
                 <div class="text">正确率</div>
                 <div class="number" v-if="answerProfileData2 && answerProfileData2.accuracyRate">
-                  {{answerProfileData1.accuracyRate.replace('%', '') || 0}}
+                  {{answerProfileData2.accuracyRate.replace('%', '') || 0}}
                   <span>%</span>
                 </div>
               </div>
@@ -312,7 +310,7 @@
           <my-dv-loading v-if="loading"></my-dv-loading>
 
           <!-- 列表 -->
-          <div class="list-container" v-if="listRight && listRight.length">
+          <div class="list-container">
           <!-- <div class="list-container"> -->
             <!-- 表头 -->
             <div class="header">
@@ -328,7 +326,7 @@
             </div>
             <!-- 表内容 -->
             <!-- 前10名 -->
-            <transition-group name="list-complete">
+            <transition-group name="list-complete" v-if="listRight && listRight.length">
               <!-- demo -->
               <!-- <div
                 class="content list-complete-item"
@@ -364,7 +362,7 @@
             <!-- 10名 以后 -->
           </div><!-- list-container end -->
 
-        </my-dv-border12>
+        <!-- </my-dv-border12> -->
       </my-dv-box>
     </my-dv-box>
     <!-- 表单 -->
@@ -387,12 +385,22 @@
     realTimeDynamic,
     rank,
     playerIntroduction
-  } from '$my/code/api/dv';
+  // } from '$my/code/api/dv';
+  } from '@/mock'; // todo
   import { getImageUrl } from '../../helper/image';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
+  // 宽度
   const PERSON_RANK_LIST_WIDTH_DIFF = window.__GLOBAL__.PERSON_RANK_LIST_WIDTH_DIFF;
+  // 介绍
   const REFRESH_STEPS_INTRODUCTION = window.__GLOBAL__.REFRESH_STEPS_INTRODUCTION;
+  // 答题概况 刷新频率
+  const REFRESH_STEPS_ANSWER_PROFILE = window.__GLOBAL__.REFRESH_STEPS_ANSWER_PROFILE;
+  // 单人排名列表
+  const REFRESH_STEPS_RANK = window.__GLOBAL__.REFRESH_STEPS_RANK;
+  // 实时动态
+  const REFRESH_STEPS_REALTIME_DYNAMIC = window.__GLOBAL__.REFRESH_STEPS_REALTIME_DYNAMIC;
+  const ORG = window.__GLOBAL__.ORG;
 
   export default {
     components: { initDialog },
@@ -401,25 +409,29 @@
       const timeRange = form.timeRange || [];
       const steps = REFRESH_STEPS; // 刷新频率 *分钟
       return {
+        ORG,
         form,
         steps, // 刷新频率 *分钟
         timeStr: [],
         loading: true, // todo
         interval: {
           date: { timer: null },
+          // 答题概况
           answerProfile: {
             timer: null,
-            time: steps, // *分钟 间隔
+            time: REFRESH_STEPS_ANSWER_PROFILE, // *分钟 间隔
             // time: 1000 * 2, // test 2秒 间隔
             value1: 0, // 用来叠加，轮询阶段
             value2: 0 // 用来叠加，轮询阶段
           },
+          // 单人排名列表
           rank: {
             timer: null,
-            time: steps // *分钟 间隔
+            time: REFRESH_STEPS_RANK // *分钟 间隔
             // time: 1000 * 2 // test 2秒 间隔
             // value: 0 // 用来叠加，轮询阶段
           },
+          // 选手介绍
           playerIntroduction: {
             timer: null,
             time: REFRESH_STEPS_INTRODUCTION, // *分钟 间隔
@@ -427,21 +439,31 @@
             value: 0, // 用来叠加，轮询阶段
             left: true // 轮询左边还是右边的列表
           },
+          // 实时动态
           realTimeDynamic: {
             timer: null,
-            time: steps // *分钟 间隔
+            time: REFRESH_STEPS_REALTIME_DYNAMIC // *分钟 间隔
             // time: 1000 * 2 // test 2秒 间隔
           }
         },
         countdown: timeRange.length ? (new Date(timeRange[1]) - new Date(timeRange[0])) / 1000 : 3600 * 2, // 秒
         pause: false,
+        players: [], // 当前参赛者
         totalPeople: 0, // 参赛总人数
         answerProfileData1: {}, // 答题概况 左边
         answerProfileData2: {}, // 答题概况 右边
         listLeft: [], // 左列表
         listRight: [], // 右列表
         playerIntroductionData: [], // 选手介绍
-        realTimeDynamicData: [] // 动态
+        realTimeDynamicData: [], // 动态,
+        // 动态列表 滚动设置
+        classOption: {
+          // waitTime: REFRESH_STEPS_REALTIME_DYNAMIC, // ms
+          // singleHeight: 145
+          limitMoveNum: 5,
+          autoPlay: true,
+          hoverStop: false
+        }
       }
     },
     computed: {
@@ -449,7 +471,11 @@
         return dateFormat(new Date(), 'yyyy-MM-dd')
       },
       formatDateStr() {
-        return dateFormat(new Date(), 'yyyy年MM月dd日')
+        // return dateFormat(new Date(), 'yyyy年MM月dd日');
+        const y = dateFormat(new Date(), 'yyyy');
+        const M = dateFormat(new Date(), 'MM');
+        const d = dateFormat(new Date(), 'dd');
+        return { y, M, d };
       },
       dayStr() {
         return (`星期${['日', '一', '二', '三', '四', '五', '六'][new Date().getDay()]}`)
@@ -526,6 +552,10 @@
           this.$refs.timer.stop();
         }
         this.pause = !this.pause;
+      },
+      onScrollEnd() {
+        console.log('到底了');
+        this.realTimeDynamic();
       },
       initTime() {
         // 右上角时间
@@ -665,11 +695,11 @@
           pageNo: 1,
           pageSize: 15
         }).then(res => {
-          console.log('左列表', res);
+          // console.log('左列表', res);
           if (res.list) { // todo
             this.listLeft = res.list || [];
             if (this.interval.playerIntroduction.timer === null) {
-              this.playerIntroduction(); // 通过列表获取选手介绍
+              this.playerIntroduction(); // 通过列表获取选手介绍 todo
             }
           }
         }).catch(e => {
@@ -682,7 +712,7 @@
           pageNo: 1,
           pageSize: 15
         }).then(res => {
-          console.log('右列表', res);
+          // console.log('右列表', res);
           if (res.list) { // todo
             this.listRight = res.list || [];
           }
@@ -694,6 +724,7 @@
       // 依赖 排名接口
       playerIntroduction() {
         const userId = this.listLeft[0].userId; // 唯一调用在左边列表回调中，所以使用左边列表为首项
+        this.players.push(userId);
         playerIntroduction({ userId }).then(res => {
           this.playerIntroductionData = res; // todo
         }).catch(e => {
@@ -715,7 +746,7 @@
             : this.listRight[this.interval.playerIntroduction.value];
           const userId = temp.userId;
           playerIntroduction({ userId }).then(res => {
-            console.log('选手介绍', res)
+            // console.log('选手介绍', res);
             this.playerIntroductionData = res; // todo
             this.playerIntroductionData.name = temp.name;
           }).catch(e => {
@@ -728,14 +759,14 @@
       realTimeDynamic() {
         realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
-          this.realTimeDynamicData = res; // todo
+          this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
         }).catch(e => {
           console.log(e);
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
           realTimeDynamic().then(res => {
             console.log('实时动态数据', res);
-            this.realTimeDynamicData = res; // todo
+            this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
           }).catch(e => {
             console.log(e);
           });
@@ -755,6 +786,11 @@ $lightBlueBg: #4c8ff5; // 列表中 当前答题 的 bg
 $listBg: #1d06a8;
 // 总分榜，列表item高度
 $totalContentItemHeight: 50px;
+
+@font-face {
+  font-family: "Demo";
+  src: url("../../assets/subject-title.ttf");
+}
 
 @mixin center {
   display: flex;
@@ -779,13 +815,24 @@ $totalContentItemHeight: 50px;
     position: absolute;
     top: 5px;
     left: 15px;
-    font-size: 28px;
+    font-size: 20px;
+    color: #90bcff;
+    span {
+      color: #fff;
+      font-weight: bold;
+    }
   }
   .date {
     position: absolute;
     top: 5px;
     right: 15px;
-    font-size: 28px;
+    font-size: 20px;
+    .zh {
+      color: #90bcff;
+    }
+    .num {
+      color: #fff;
+    }
   }
   .my-dv-page {
     background-image: url("~$ui/assets/bg/03.jpg");
@@ -845,31 +892,41 @@ $totalContentItemHeight: 50px;
     background-position: bottom;
     position: absolute;
     bottom: 0;
+    .org {
+      width: 100%;
+      position: absolute;
+      bottom: 10px;
+      color: #799ec7;
+      text-align: center;
+      font-size: 18px;
+    }
   }
 
   // 答题概况
   .gaikuang {
     height: 210px;
     background-image: url("../../assets/img-person/person-bs-bg-left.png");
-    background-size: cover;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     .top {
       height: 60px;
       display: flex;
       background-image: url("../../assets/img-person/person-bs-title-bg-left.png");
       background-repeat: no-repeat;
+      position: relative;
+      left: -7px;
       .kemu {
         width: 25%;
         @include center;
       }
       .title { // 窝点勘查
         width: 35%;
-        font-size: 28px;
+        font-size: 38px;
         margin-right: -50px;
-        font-style: italic;
+        font-family: 'Demo';
         color: #fff;
         span {
-          margin-left: -20px;
+          margin-left: -60px;
         }
       }
       .name {
@@ -883,6 +940,7 @@ $totalContentItemHeight: 50px;
       }
       .active {
         background-image: url("../../assets/img-person/person-bs-km-now.png");
+        color: #ffd801;
       }
       .inactive {
         background-image: url("../../assets/img-person/person-bs-km-lock.png");
@@ -900,7 +958,7 @@ $totalContentItemHeight: 50px;
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
-        border-right: 1px solid #013061;
+        // border-right: 1px solid #013061;
         flex-direction: column;
         font-size: 16px;
         .text {
@@ -1007,8 +1065,8 @@ $totalContentItemHeight: 50px;
 
       &:nth-child(1) {
         margin: 0;
-        background-image: url("../../assets/img-common/top1.png");
-        background-size: 103% 120%;
+        background-image: url("../../assets/img-common/top1-1.png");
+        background-size: 102% 120%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1020,8 +1078,8 @@ $totalContentItemHeight: 50px;
       }
       &:nth-child(2) {
         margin: 0;
-        background-image: url("../../assets/img-common/top2.png");
-        background-size: 103% 120%;
+        background-image: url("../../assets/img-common/top2-1.png");
+        background-size: 102% 120%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1034,8 +1092,8 @@ $totalContentItemHeight: 50px;
       &:nth-child(3) {
         margin: 0;
         // 欠缺图片
-        background-image: url("../../assets/img-common/top3.png");
-        background-size: 103% 120%;
+        background-image: url("../../assets/img-common/top3-1.png");
+        background-size: 102% 120%;
         background-repeat: no-repeat;
         span:first-child {
           // todo url
@@ -1232,8 +1290,9 @@ $totalContentItemHeight: 50px;
 
   // 浮框
   .float-container {
-    max-height: 510px;
-    overflow-y: auto;
+    max-height: 555px;
+    // overflow-y: auto;
+    overflow: hidden;
     .wdkc {
       float: left;
       // background: $blueBg;
@@ -1378,7 +1437,7 @@ $totalContentItemHeight: 50px;
 
   // 动画
   .list-complete-item {
-    transition: all 1s;
+    transition: all .6s;
     /* display: inline-block; */
     margin-right: 10px;
   }
@@ -1386,6 +1445,9 @@ $totalContentItemHeight: 50px;
   .list-complete-enter, .list-complete-leave-to {
     opacity: 0;
     transform: translateY(30px);
+  }
+  .list-complete-leave-to {
+    transition: all .3s;
   }
   .list-complete-leave-active {
     position: absolute;

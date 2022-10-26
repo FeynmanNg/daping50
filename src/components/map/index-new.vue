@@ -48,17 +48,18 @@
         <div
           v-for="item in rank"
           :key="item.province"
-          :class="{ base: 1, [item.provinceClassName]: 1 }"
+          :class="{ 'base': 1, [item.provinceClassName]: 1 }"
           >
-          <div v-for="rt in realTimeDynamicData" :key="rt.province">
+          <div v-for="(rt) in realTimeDynamic" :key="rt.province">
+            <!-- 弹框 -->
             <div
-              v-if="rt.province === item.province"
+              v-if="validProvince(rt.province, item.province)"
               :class="{
                 'modal': 1,
                 'modal-left': rt.competitionType.left,
                 'modal-right': rt.competitionType.right
               }"
-              :style="`top: ${calculateTop(item.value)}px;`">
+              :style="`bottom: ${calculateTop(item.value)}px;`">
               <div class="type">
                 {{rt.competitionType.left ? form.subject1 : form.subject2}}
               </div>
@@ -67,30 +68,49 @@
                   <img :src="getImageUrl(rt.userId)" style="width: 100%; height: 100%" />
                 </div>
                 <div class="name-rank">
-                  <div class="name">{{item.userName}}</div>
+                  <div class="name">{{rt.userName}}</div>
                   <div class="rank">排名第 {{item.rankNo}}</div>
                 </div>
                 <div class="time">{{item.recordTime}}</div>
-                <div class="text">答对+1！连续答对{{item.continueRight}}题！</div>
+                <div class="text">答对+1！连续答对{{rt.value}}题！</div>
               </div>
             </div>
-            <div class="bar-box">
             <div
-              :class="{
-                'triangle': 1,
-                'triangle-left': rt.competitionType.left,
-                'triangle-right': rt.competitionType.right,
-              }"></div>
-            <div
-              :class="{
-                'bar': 1,
-                'bar-left': rt.competitionType.left,
-                'bar-right': rt.competitionType.right
-              }"
-              :style="`height: ${item.value}px;`">
+              class="bar-box">
+              <!-- 皇冠 -->
+              <div
+                v-if="isTop(item.value)"
+                :class="{
+                  'tag': 1,
+                  'tag-top1': calculateTop1(item.value),
+                  'tag-top2': calculateTop2(item.value),
+                  'tag-top3': calculateTop3(item.value)
+                }">
+              </div>
+              <!-- 三角 -->
+              <div
+                v-if="validProvince(rt.province, item.province)"
+                :class="{
+                  'triangle': 1,
+                  'triangle-left': rt.competitionType.left,
+                  'triangle-right': rt.competitionType.right,
+                }">
+              </div>
+              <!-- 柱子 -->
+              <div
+                :class="{
+                  'bar': 1,
+                  'bar-left': rt.competitionType.left,
+                  'bar-right': rt.competitionType.right,
+                  'bar-top1': calculateTop1(item.value),
+                  'bar-top2': calculateTop2(item.value),
+                  'bar-top3': calculateTop3(item.value)
+                }"
+                :style="`height: ${calculateHeight(item.value)}px;`">
               </div>
             </div>
           </div>
+          <!-- 省份/总分 -->
           <div class="province">
             <div>{{item.value}}</div>
             <div>{{item.province}}</div>
@@ -104,6 +124,7 @@
 <script>
 import PROVINCE from './province';
 import { getImageUrl } from '../../helper/image';
+import { cloneDeep } from '../../../ui/lib/utils/util';
 
 export default {
   props: {
@@ -163,33 +184,55 @@ export default {
     // 全国数据
     assembleRank() {
       if (this.rank1Data && this.rank1Data.length) {
-        this.rank = this.provinces.map(p => {
+        const data = [];
+        this.provinces.forEach(p => {
           const exist = this.rank1Data
             .find(r => this.valid(p, r.province));
-          return {
-            province: p,
-            provinceClassName: this.provincesClassName[p],
-            value: exist ? exist.totalScore : -1,
-            rankNo: exist ? exist.rankNo : -1
+          if (exist) {
+            data.push({
+              province: p,
+              provinceClassName: this.provincesClassName[p],
+              value: exist ? exist.totalScore : -1,
+              rankNo: exist ? exist.rankNo : -1
+            })
           }
         });
+        this.rank = data;
         console.log('组装完成 rank', this.rank);
       }
     },
     assembleBar() {
       if (this.realTimeDynamicData && this.realTimeDynamicData.length) {
-        this.realTimeDynamic = this.provinces.map(p => {
-          const exist = this.realTimeDynamicData
-            .find(r => this.valid(p, r.province));
-          return {
-            province: p,
-            value: exist ? exist.continueRight : -1, // 连续答题
-            userName: exist.userName,
-            recordTime: exist.recordTime,
-            competitionId: exist.competitionId, // 用来展示是 哪个比赛
-            competitionType: this.validCompetitionType(exist.competitionId)
+        // 去重
+        const dedup = this.realTimeDynamicData.reduce((total, cur) => {
+          if (total.length === 0) {
+            return [cur];
+          } else {
+            const i = total.findIndex(t => t.province === cur.province);
+            if(i >= 0) {
+              total.splice(i, cur);
+              return total;
+            } else {
+              total.push(cur);
+              return total;
+            }
           }
+        }, []);
+        const data = [];
+        this.provinces.forEach(p => {
+          const exist = dedup.find(r => this.valid(p, r.province));
+          if (exist) {
+            data.push({
+              province: p,
+              value: exist ? exist.continueRight : -1, // 连续答题
+              userName: exist.userName,
+              recordTime: exist.recordTime,
+              competitionId: exist.competitionId, // 用来展示是 哪个比赛
+              competitionType: this.validCompetitionType(exist.competitionId)
+            });
+          };
         });
+        this.realTimeDynamic = data;
         console.log('组装完成 realTimeDynamic', this.realTimeDynamic);
       }
     },
@@ -216,15 +259,44 @@ export default {
      * height > 60 , top 负数
      */
     calculateTop(value) {
-      const rank = this.rank.reduce((c, n) => c.value > n.value ? c : n);
-      const diff = value / rank.value;
+      // const rank = this.rank.reduce((c, n) => c.value > n.value ? c : n);
+      // const diff = value / rank.value;
       
-      const result = this.max * diff;
+      // const result = this.max * diff;
+      // console.log('计算top', `总分=${value}`, `结果=${result}`, `最大值=${rank.value}`);
+      // return result > this.equator ? -(result) : result;
+      const isTop = this.isTop(value);
+      console.log('是否前三', isTop);
+      // 68 为 .province 盒子的高度；25 .tag 为皇冠的高度
+      const top = this.calculateHeight(value) + 68 + (isTop ? 25 - 10 : 0);
+      console.log('计算top值', top);
+      return top;
 
-      return result > this.equator ? -(result) : result;
     },
     calculateHeight(value) {
+      console.log('计算高度', value, `结果=${value > this.max ? this.max : value}`);
       return value > this.max ? this.max : value;
+    },
+    calculateTop1(value) {
+      const rank = this.rank.reduce((c, n) => c.value > n.value ? c : n);
+      return value === rank.value;
+    },
+    calculateTop2(value) {
+      const temp = cloneDeep(this.rank).sort((a, b) => a.value - b.value);
+      temp.pop();
+      return value === (temp[temp.length - 1].value || 0);
+    },
+    calculateTop3(value) {
+      const temp = cloneDeep(this.rank).sort((a, b) => a.value - b.value);
+      temp.pop();
+      temp.pop();
+      return value === (temp[temp.length - 1].value || 0);
+    },
+    isTop(value) {
+      return this.calculateTop1(value) || this.calculateTop2(value) || this.calculateTop3(value);
+    },
+    validProvince(p1, p2) {
+      return p1.indexOf(p2) >= 0 || p2.indexOf(p1) >= 0;
     }
   }
 }
@@ -233,7 +305,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/assets/style/common';
-@import '@/assets/style/map';
+@import '@/assets/style/map'; // todo 地图的定位点 css 设定
 
 // $blue: #00ffba;
 // $purple: #c3a9ff;
@@ -262,8 +334,10 @@ $blueFont: #00ccff;
   // 弹框的整体
   .base {
     width: 400px;
-    min-height: 284px;
-    max-height: 384px;
+    // min-height: 248px;
+    // max-height: 378px;
+    min-height: 273px;
+    max-height: 403px;
     position: absolute;
 
     // 省、人数
@@ -295,8 +369,9 @@ $blueFont: #00ccff;
     .bar-box {
       position: absolute;
       bottom: 48px;
+      left: 164px;
 
-      $barBoxW: 30px;
+      $barBoxW: 20px;
       // 柱子
       .bar {
         width: $barBoxW;
@@ -315,12 +390,39 @@ $blueFont: #00ccff;
         &.bar-top3 {
           background-image: url("../../assets/img-team/team-bar-top3.png");
         }
+        &.bar-top1, &.bar-top2, &.bar-top3 {
+          width: $barBoxW * 2;
+          transform: translateX(-10px);
+          background-size: 180% 150%;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+      }
+      // top 1/2/3 标志
+      .tag {
+        width: 25px;
+        height: 25px;
+        background-image: url("../../assets/img-common/tag-top1.png");
+        background-size: 150% 150%;
+        background-repeat: no-repeat;
+        background-position: center;
+        transform: translateX(-2.5px);
+        &.tag-top1 {
+          background-image: url("../../assets/img-common/tag-top1.png");
+        }
+        &.tag-top2 {
+          background-image: url("../../assets/img-common/tag-top2.png");
+        }
+        &.tag-top3 {
+          background-image: url("../../assets/img-common/tag-top3.png");
+        }
       }
       // 三角形
       .triangle {
         width: $barBoxW;
-        height: $barBoxW;
-        background-size: 100% 100%;
+        height: $barBoxW / 2;
+        // transform: translateX(5px); // 根据 $barBoxW 来调整
+        background-size: 50% 100%;
         background-repeat: no-repeat;
         background-position: center;
         &.triangle-left {
@@ -339,11 +441,12 @@ $blueFont: #00ccff;
       background-repeat: no-repeat;
       background-position: center;
       position: absolute;
+      z-index: 1;
 
       // 此值计算：.bar 的最小高度以 60px为标准
       // 当 .bar min-h=60px top=0px
       // 当 .bar min-h=20px top=40px
-      top: 40px;
+      // top: 40px;
 
       &.modal-left {
         background-image: url("../../assets/img-team/team-fk-left.png");
