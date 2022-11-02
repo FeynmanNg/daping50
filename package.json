@@ -32,6 +32,7 @@
     "route": "node bin/my route",
     "dev": "npm run ready && concurrently \"npm run serve -- --open\" \"npm run route watch\"",
     "build": "npm run ready force && npm run route build && npm run theme prod && vue-cli-service build",
+    "build-mock": "npm run ready force && npm run route build && npm run theme prod && vue-cli-service build --mode test",
     "preview": "node bin/my preview",
     "demo": "node bin/my demo",
     "jsdoc": "node bin/my jsdoc",

@@ -7,11 +7,14 @@
       <div class="org">{{ORG}}</div>
     </div>
 
-    <my-dv-header5>
-      <span class="competitors-total">参赛总人数：<span>{{totalPeople || 0}}</span>&nbsp;人</span>
+    <!-- <my-dv-header5>
+      <span class="competitors-total">
+        <span class="zh">参赛总人数：</span>
+        <span class="num">{{totalPeople || 0}}</span>
+        <span class="zh">&nbsp;人</span>
+      </span>
       <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title>
       <span class="date">
-        <!-- <span>{{formatDateStr}}&nbsp;</span> -->
         <span>
           <span class="num">{{formatDateStr.y}}</span><span class="zh">&nbsp;年&nbsp;</span>
           <span class="num">{{formatDateStr.M}}</span><span class="zh">&nbsp;月&nbsp;</span>
@@ -20,26 +23,38 @@
         <span class="num" v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
         <span class="zh">&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
       </span>
-    </my-dv-header5>
+    </my-dv-header5> -->
+    <div class="main-title">
+      <span class="competitors-total">
+        <span class="zh">参赛总人数：</span>
+        <span class="num">{{totalPeople || 0}}</span>
+        <span class="zh">&nbsp;人</span>
+      </span>
+      <!-- <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title> -->
+      <span class="title">
+        {{form.title}}
+      </span>
+      <span class="date">
+        <span>
+          <span class="num">{{formatDateStr.y}}</span><span class="zh">&nbsp;年&nbsp;</span>
+          <span class="num">{{formatDateStr.M}}</span><span class="zh">&nbsp;月&nbsp;</span>
+          <span class="num">{{formatDateStr.d}}</span><span class="zh">&nbsp;日&nbsp;</span>
+        </span>
+        <span class="num" v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
+        <span class="zh">&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
+      </span>
+    </div>
 
     <my-dv-box layout direction="column" :gap="10" top="90px" width="calc(100% - 20px)"
                height="calc(100% - 100px)"
                x-align="center">
       <!-- 左侧 窝点勘察 -->
-      <my-dv-box layout :gap="10" height="100%">
-        <!-- <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)"> -->
+      <my-dv-box layout :gap="10" height="100%" padding="0 0 0 20px">
           <div class="gaikuang">
             <div class="top">
-              <!-- demo -->
-              <!-- <div class="kemu title">
-                <span>窝点勘察</span>
-              </div>
-              <div class="kemu name">现场勘查</div>
-              <div class="kemu name active">证据固定</div>
-              <div class="kemu name inactive">研判分析</div> -->
 
               <div class="kemu title">
-                <span>{{form.subject1}}</span>
+                <span>{{form.subject1 || '待定'}}</span>
               </div>
               <div
                 v-for="(sub, i) in arrSub1"
@@ -48,6 +63,8 @@
                   'kemu': 1, 'name': 1,
                   'active': (interval.answerProfile.value1 + 1) % arrSub1.length === i,
                   'inactive': answerProfileData1.onlineNumber === 0
+                    || answerProfileData1.onlineNumber === null
+                    || answerProfileData1.onlineNumber === 0
                 }">
                 {{sub.name}}
               </div>
@@ -55,21 +72,25 @@
             <div class="bottom">
               <div class="left">
                 <div class="text">正确率</div>
-                <div class="number" v-if="answerProfileData1 && answerProfileData1.accuracyRate">
-                  {{answerProfileData1.accuracyRate.replace('%', '') || 0}}
+                <div class="number" v-if="answerProfileData1">
+                  {{answerProfileData1.accuracyRate ? answerProfileData1.accuracyRate.replace('%', '') : 0}}
                   <span>%</span>
                 </div>
               </div>
               <div class="right">
                 <div class="online">
-                  <div class="online-img"></div>
+                  <div class="online-img">
+                    <span class="img"></span>
+                  </div>
                   <div class="online-text">
                     <div>在考人数</div>
                     <div>{{answerProfileData1.onlineNumber || 0}}</div>
                   </div>
                 </div>
                 <div class="online">
-                  <div class="online-img finish-img"></div>
+                  <div class="online-img finish-img">
+                    <span class="img"></span>
+                  </div>
                   <div class="online-text finish-text">
                     <div>已完成数</div>
                     <div>{{answerProfileData1.finishedNumber || 0}}</div>
@@ -96,7 +117,6 @@
               <span :style="{ 'width': `${lengthLeft.total}%` }">总分</span>
             </div>
             <!-- 表内容 -->
-            <!-- 前10名 -->
             <transition-group name="list-complete">
               <div
                 :class="{ 'content': 1, 'list-complete-item': 1, 'content-last': i >= 10 }"
@@ -104,8 +124,16 @@
                 v-show="i < 15"
                 :key="person.userId">
                 <span :style="{ 'width': `${lengthLeft.no}%` }">{{i > 2 ? person.rankNo : ''}}</span>
-                <span class="name" :style="{ 'width': `${lengthLeft.name}%` }">{{person.name}}</span>
-                <span class="province" :style="{ 'width': `${lengthLeft.area}%` }">{{person.province}}</span>
+                <span class="name" :style="{ 'width': `${lengthLeft.name}%` }">
+                  <span :class="{ 'text-scroll-wrap': person.name.length > 4 }">
+                    <span :class="{ 'text-scroll-item': person.name.length > 4 }">{{person.name}}</span>
+                  </span>
+                </span>
+                <span class="province" :style="{ 'width': `${lengthLeft.area}%` }">
+                  <span :class="{ 'text-scroll-wrap': person.province.length > 4 }">
+                    <span :class="{ 'text-scroll-item': person.province.length > 4 }">{{person.province}}</span>
+                  </span>
+                </span>
                 <span
                   class="score"
                   v-for="(stage, i) in arrSub1"
@@ -114,16 +142,12 @@
                 <span :style="{ 'width': `${lengthLeft.total}%` }">{{person.totalScore}}</span>
               </div>
             </transition-group>
-            <!-- <div class="dash" v-show="listLeft.length > 10"></div> -->
-            <!-- 10名 以后 -->
           </div><!-- list-container end -->
-        <!-- </my-dv-border12> -->
 
       </my-dv-box>
 
       <!-- 中 选手介绍 -->
       <!-- <my-dv-border12 height="100%" :weight="1" fill="rgba(255,255,255,0.05)"> -->
-        <my-dv-loading v-if="loading"></my-dv-loading>
         <my-dv-box layout direction="column" top="20px" width="100%">
           <my-dv-box height="100px">
             <!-- 倒计时 -->
@@ -131,16 +155,23 @@
               <div class="countdown-container">
                 <div class="countdown" @click="onShowInit">
                   <div class="part">
-                    <span class="clock"></span>
-                    倒计时：
+                    <span class="clock">
+                      <span class="img"></span>
+                      &nbsp;倒计时：
+                    </span>
                   </div>
                   <div class="part part2">
                     <my-dv-title class="my-dv-timer">
-                      <my-timer
+                      <!-- <my-timer
                         :target="countdown"
                         :auto="pause"
                         ref="timer"
-                        countdown></my-timer>
+                        countdown></my-timer> -->
+                      <timer
+                        :target="countdown"
+                        :auto="pause"
+                        ref="timer"
+                        countdown></timer>
                     </my-dv-title>
                   </div>
                 </div>
@@ -154,17 +185,13 @@
                 <div class="left">
                   <div class="image-wrap">
                     <!-- 图片 -->
-                    <img :src="getImageUrl(playerIntroductionData.userId)" style="width: 100%; height: 100%" />
+                    <img
+                      class="img"
+                      :src="playerIntroductionData.img" @error="onErrorImg($event, playerIntroductionData)" />
                   </div>
                 </div>
                 <div class="right">
                   <div class="province">
-                    <!-- demo -->
-                    <!-- <span>
-                      <span>张三</span>
-                      <span>广东省</span>
-                    </span> -->
-
                     <span>
                       <span>{{playerIntroductionData.name}}</span>
                       <span>{{playerIntroductionData.province}}</span>
@@ -184,90 +211,54 @@
               </div>
             </div>
             <!-- 浮框 -->
-            <div class="float-container">
+            <div class="float-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
               <!-- 窝点勘察 -->
-            <vue-seamless-scroll
+            <!-- <vue-seamless-scroll
                   :data="realTimeDynamicData"
                   :class-option="classOption"
-                  ref="seamlessScroll">
-              <transition-group name="list-complete" v-if="realTimeDynamicData && realTimeDynamicData.length">
+                  ref="seamlessScroll"> -->
               <!-- <transition-group name="list-complete"> -->
-                <!-- demo -->
-                <!-- <div class="float-item wdkc list-complete-item" :key="2">
-                  <div class="content">
-                    <div class="img"></div>
-                    <div class="name-rank">
-                      <div class="name">哈凯文</div>
+                <div v-for="(item, i) in realTimeDynamicData" :key="item.userId + `${i}`">
+                  <transition name="slide-fade">
+                    <div v-if="item.show" :class="{
+                      'list-complete-item': true,
+                      'float-item': true,
+                      'wdkc': form.subject1ids.indexOf(item.competitionId) >= 0,
+                      'jcjd': form.subject1ids.indexOf(item.competitionId) < 0
+                    }">
+                      <div class="content">
+                        <div class="img">
+                          <img :src="item.img" @error="onErrorImg($event, item)" style="width: 100%; height: 100%" />
+                        </div>
+                        <div class="name-rank">
+                          <div class="name">{{item.userName}}</div>
+                          <!-- <div class="rank">排名第{{item.rankNo}}</div> -->
+                        </div>
+                        <div class="time-correct">
+                          <div class="time">{{item.recordTime}}</div>
+                          <div class="correct">答对+1！连续答对{{item.continueRight}}题！</div>
+                        </div>
+                      </div>
+                      <div class="type">{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}</div>
                     </div>
-                    <div class="time-correct">
-                      <div class="time">13:41:30</div>
-                      <div class="correct">答对+1！连续答对6题！</div>
-                    </div>
-                  </div>
-                  <div class="type">窝点勘察</div>
+                  </transition>
                 </div>
-                <div class="float-item jcjd list-complete-item" :key="2">
-                  <div class="content">
-                    <div class="img"></div>
-                    <div class="name-rank">
-                      <div class="name">哈凯文</div>
-                    </div>
-                    <div class="time-correct">
-                      <div class="time">13:41:30</div>
-                      <div class="correct">答对+1！连续答对6题！</div>
-                    </div>
-                  </div>
-                  <div class="type">检查鉴定</div>
-                </div> -->
-
-                <div
-                  v-for="(item) in realTimeDynamicData" :key="item.userId"
-                  :class="{
-                    'list-complete-item': true,
-                    'float-item': true,
-                    'wdkc': form.subject1ids.indexOf(item.competitionId) >= 0,
-                    'jcjd': form.subject1ids.indexOf(item.competitionId) < 0
-                  }">
-                  <div class="content">
-                    <div class="img">
-                      <img :src="getImageUrl(item.userId)" style="width: 100%; height: 100%" />
-                    </div>
-                    <div class="name-rank">
-                      <div class="name">{{item.userName}}</div>
-                      <!-- <div class="rank">排名第{{item.rankNo}}</div> -->
-                    </div>
-                    <div class="time-correct">
-                      <div class="time">{{item.recordTime}}</div>
-                      <div class="correct">答对+1！连续答对{{item.continueRight}}题！</div>
-                    </div>
-                  </div>
-                  <div class="type">{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}</div>
-                </div>
-              </transition-group>              
-            </vue-seamless-scroll>
+              <!-- </transition-group>               -->
+            <!-- </vue-seamless-scroll> -->
             </div>
           </my-dv-box>
         </my-dv-box>
       <!-- </my-dv-border12> -->
 
       <!-- 右侧 检查鉴定 -->
-      <my-dv-box layout :gap="10" height="100%">
+      <my-dv-box layout :gap="10" height="100%" padding="0 20px 0 0">
         <my-dv-loading v-if="loading"></my-dv-loading>
         <!-- <my-dv-border12 width="100%" fill="rgba(255,255,255,0.05)"> -->
           <div class="gaikuang gaikuang-right">
             <div class="top">
-              <!-- demo -->
-              <!-- <div class="kemu title">
-                <div class="kemu title">
-                  <span>窝点勘察</span>
-                </div>
-              </div>
-              <div class="kemu name">现场勘查</div>
-              <div class="kemu name active">证据固定</div>
-              <div class="kemu name inactive">研判分析</div> -->
 
               <div class="kemu title">
-                  <span>{{form.subject2}}</span>
+                  <span>{{form.subject2 || '待定'}}</span>
                 </div>
               <div
                 v-for="(sub, i) in arrSub2"
@@ -275,7 +266,9 @@
                 :class="{
                   'kemu': 1, 'name': 1,
                   'active': (interval.answerProfile.value2 + 1) % arrSub2.length === i,
-                  'inactive': answerProfileData2.onlineNumber === 0
+                  'inactive': answerProfileData2.onlineNumber === undefined
+                    || answerProfileData2.onlineNumber === null
+                    || answerProfileData2.onlineNumber === 0
                 }">
                 {{sub.name}}
               </div>
@@ -283,21 +276,25 @@
             <div class="bottom">
               <div class="left">
                 <div class="text">正确率</div>
-                <div class="number" v-if="answerProfileData2 && answerProfileData2.accuracyRate">
-                  {{answerProfileData2.accuracyRate.replace('%', '') || 0}}
+                <div class="number" v-if="answerProfileData2">
+                  {{answerProfileData2.accuracyRate ? answerProfileData2.accuracyRate.replace('%', '') : 0}}
                   <span>%</span>
                 </div>
               </div>
               <div class="right">
                 <div class="online">
-                  <div class="online-img"></div>
+                  <div class="online-img">
+                    <span class="img"></span>
+                  </div>
                   <div class="online-text">
                     <div>在考人数</div>
                     <div>{{answerProfileData2.onlineNumber || 0}}</div>
                   </div>
                 </div>
                 <div class="online">
-                  <div class="online-img finish-img"></div>
+                  <div class="online-img finish-img">
+                    <span class="img"></span>
+                  </div>
                   <div class="online-text finish-text">
                     <div>已完成数</div>
                     <div>{{answerProfileData2.finishedNumber || 0}}</div>
@@ -327,29 +324,22 @@
             <!-- 表内容 -->
             <!-- 前10名 -->
             <transition-group name="list-complete" v-if="listRight && listRight.length">
-              <!-- demo -->
-              <!-- <div
-                class="content list-complete-item"
-                :class="{ 'content-last': i >= 10 }"
-                v-for="(item, i) in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]"
-                :key="item">
-                <span :style="{ 'width': `${lengthRight.no}%` }">{{i > 2 ? i : ''}}</span>
-                <span :style="{ 'width': `${lengthRight.name}%` }">周星星</span>
-                <span :style="{ 'width': `${lengthRight.area}%` }">广东省</span>
-                <span :style="{ 'width': `${lengthRight.arr}%` }">88</span>
-                <span :style="{ 'width': `${lengthRight.arr}%` }">88</span>
-                <span :style="{ 'width': `${lengthRight.total}%` }">88</span>
-              </div> -->
-              
-
               <div
                 :class="{ 'content': 1, 'list-complete-item': 1, 'content-last': i >= 10 }"
                 v-for="(person, i) in listRight"
                 v-show="i < 15"
                 :key="person.userId">
                 <span :style="{ 'width': `${lengthRight.no}%` }">{{i > 2 ? person.rankNo : ''}}</span>
-                <span class="name" :style="{ 'width': `${lengthRight.name}%` }">{{person.name}}</span>
-                <span class="province" :style="{ 'width': `${lengthRight.area}%` }">{{person.province}}</span>
+                <span class="name" :style="{ 'width': `${lengthRight.name}%` }">
+                  <span :class="{ 'scroll-wrap': person.name.length > 4 }">
+                    <span :class="{ 'scroll-item': person.name.length > 4 }">{{person.name}}</span>
+                  </span>
+                </span>
+                <span class="province" :style="{ 'width': `${lengthRight.area}%` }">
+                  <span :class="{ 'text-scroll-wrap': person.province.length > 4 }">
+                    <span :class="{ 'text-scroll-item': person.province.length > 4 }">{{person.province}}</span>
+                  </span>
+                </span>
                 <span
                   class="score"
                   v-for="(stage, i) in arrSub2"
@@ -358,8 +348,6 @@
                 <span :style="{ 'width': `${lengthRight.total}%` }">{{person.totalScore}}</span>
               </div>
             </transition-group>
-            <!-- <div class="dash" v-show="listRight.length > 10"></div> -->
-            <!-- 10名 以后 -->
           </div><!-- list-container end -->
 
         <!-- </my-dv-border12> -->
@@ -375,18 +363,20 @@
 </template>
 <script>
   import initDialog from '../init-dialog';
+  import timer from '../timer';
   import dateFormat from '$ui/utils/date';
   import solarLunar from 'solarlunar';
   import storage from '@/helper/storage';
   import { onPause, onStart, onReset } from '@/helper/bus';
-  import {
-    answerProfile,
-    totalContestantsNumber,
-    realTimeDynamic,
-    rank,
-    playerIntroduction
+  // import {
+  //   answerProfile,
+  //   totalContestantsNumber,
+  //   realTimeDynamic,
+  //   rank,
+  //   playerIntroduction
   // } from '$my/code/api/dv';
-  } from '@/mock'; // todo
+  // } from '@/mock'; // todo
+  import api from '@/helper/api';
   import { getImageUrl } from '../../helper/image';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
@@ -403,7 +393,7 @@
   const ORG = window.__GLOBAL__.ORG;
 
   export default {
-    components: { initDialog },
+    components: { initDialog, timer },
     data() {
       const form = storage.getForm();
       const timeRange = form.timeRange || [];
@@ -539,6 +529,10 @@
     },
     methods: {
       getImageUrl,
+      onErrorImg(e, rt) {
+        // console.log('图片加载出错', rt);
+        rt.img = require('../../assets/img-common/avatar-default.png');
+      },
       onShowInit() {
         this.$refs.initDialog.dialogVisible = true;
       },
@@ -589,13 +583,29 @@
           const endD = new Date(endT);
           const startD = new Date(startS);
           const now = new Date();
-
+          const nowY = now.getFullYear();
+          const nowM = now.getMonth();
+          const nowD = now.getDate();
+          endD.setFullYear(nowY);
+          endD.setMonth(nowM);
+          endD.setDate(nowD);
+          startD.setFullYear(nowY);
+          startD.setMonth(nowM);
+          startD.setDate(nowD);
+          console.log('比对时间', endD - now);
           // 修正倒计时
-          if (endD - now) { // 未到结束时间
+          if (endD - now > 0) { // 未到结束时间
             if (now - startD) { // 到达开始时间
               this.countdown = (endD - now) / 1000;
-              // console.log('修正倒计时', this.countdown, startD, endD, now);
+              console.log('修正倒计时', this.countdown, startD, endD, now);
+              this.pause = true;
+              this.$refs.timer.start();
             }
+          } else {
+            this.countdown = '00:00:00';
+            this.pause = false;
+            this.$refs.timer.stop();
+            // this.$refs.timer.reset()
           }
         }
 
@@ -657,9 +667,9 @@
           // competitionName: '',
           stageName: stage[random].name
         };
-        answerProfile(query).then(res => {
-          console.log('答题概况数据', res);
-          this[`answerProfileData${leftOrRight}`] = res; // todo
+        api.answerProfile(query).then(res => {
+          // console.log('答题概况数据', res);
+          this[`answerProfileData${leftOrRight}`] = res || {}; // todo
         }).catch(e => {
           console.log(e);
         });
@@ -671,9 +681,9 @@
         const query = {
           competitionIds: sub1.concat(sub2)
         }
-        totalContestantsNumber(query).then(res => {
-          console.log('参赛人数数据', res);
-          this.totalPeople = res; // todo
+        api.totalContestantsNumber(query).then(res => {
+          // console.log('参赛人数数据', res);
+          this.totalPeople = res || 0; // todo
         }).catch(e => {
           console.log(e);
         });
@@ -690,12 +700,11 @@
         }, this.interval.rank.time);
       },
       rankLeft() {
-        rank({
+        api.rank({
           competitionIds: this.form.subject1ids,
           pageNo: 1,
           pageSize: 15
         }).then(res => {
-          // console.log('左列表', res);
           if (res.list) { // todo
             this.listLeft = res.list || [];
             if (this.interval.playerIntroduction.timer === null) {
@@ -707,7 +716,7 @@
         })
       },
       rankRight() {
-        rank({
+        api.rank({
           competitionIds: this.form.subject2ids,
           pageNo: 1,
           pageSize: 15
@@ -723,10 +732,18 @@
       // 选手介绍
       // 依赖 排名接口
       playerIntroduction() {
+        if (!this.listLeft || this.listLeft.length === 0) {
+          return;
+        }
         const userId = this.listLeft[0].userId; // 唯一调用在左边列表回调中，所以使用左边列表为首项
         this.players.push(userId);
-        playerIntroduction({ userId }).then(res => {
+        api.playerIntroduction({ userId }).then(res => {
           this.playerIntroductionData = res; // todo
+          if (this.playerIntroductionData) {
+            this.playerIntroductionData.img = this.getImageUrl(this.playerIntroductionData.userId);
+          }
+          this.playerIntroductionData.name = this.listLeft[0].name;
+          // console.log('选手介绍', this.playerIntroductionData);
         }).catch(e => {
           console.log(e);
         })
@@ -745,10 +762,13 @@
             ? this.listLeft[this.interval.playerIntroduction.value]
             : this.listRight[this.interval.playerIntroduction.value];
           const userId = temp.userId;
-          playerIntroduction({ userId }).then(res => {
+          api.playerIntroduction({ userId }).then(res => {
             // console.log('选手介绍', res);
             this.playerIntroductionData = res; // todo
-            this.playerIntroductionData.name = temp.name;
+            if (this.playerIntroductionData) {
+              this.playerIntroductionData.name = temp.name;
+              this.playerIntroductionData.img = this.getImageUrl(this.playerIntroductionData.userId);
+            }
           }).catch(e => {
             console.log(e);
           })
@@ -757,16 +777,41 @@
       
       // 实时动态数据 用于展示中间部分，下面的浮框
       realTimeDynamic() {
-        realTimeDynamic().then(res => {
-          console.log('实时动态数据', res);
-          this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+        api.realTimeDynamic().then(res => {
+          // console.log('实时动态数据', res);
+          if (!res || res.length === 0) return;
+          this.realTimeDynamicData = this.realTimeDynamicData.concat([res[0]]);
+          if (this.realTimeDynamicData.length) {
+            this.realTimeDynamicData.forEach(rt => {
+              rt.img = this.getImageUrl(rt.userId);
+              rt.show = true;
+            });
+          }
         }).catch(e => {
           console.log(e);
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
-          realTimeDynamic().then(res => {
-            console.log('实时动态数据', res);
-            this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+          api.realTimeDynamic().then(res => {
+            // this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+            if (res && res.length) {
+              const last = res[res.length - 1];
+              last.img = this.getImageUrl(last.userId);
+              if (this.realTimeDynamicData.length > 3) {
+                this.realTimeDynamicData[0].show = false;
+              }
+              setTimeout(() => {
+                if (this.realTimeDynamicData.length > 3) {
+                  this.realTimeDynamicData.shift();
+                }
+                // this.realTimeDynamicData.push(last);
+                this.realTimeDynamicData = this.realTimeDynamicData.concat([last]);
+                this.$nextTick(() => {
+                  this.realTimeDynamicData.forEach(rt => {
+                    rt.show = true;
+                  });
+                })
+              }, 3000);
+            }
           }).catch(e => {
             console.log(e);
           });
@@ -776,6 +821,8 @@
   }
 </script>
 <style lang="scss" scoped>
+@import '@/assets/style/common';
+
 $blueFont: #00ccff;
 $lightBlueFont: #00ffff;
 $yellowFont: #ffff00;
@@ -786,11 +833,9 @@ $lightBlueBg: #4c8ff5; // 列表中 当前答题 的 bg
 $listBg: #1d06a8;
 // 总分榜，列表item高度
 $totalContentItemHeight: 50px;
+// 答题概况 高度
+$gaikuangH: 270px;
 
-@font-face {
-  font-family: "Demo";
-  src: url("../../assets/subject-title.ttf");
-}
 
 @mixin center {
   display: flex;
@@ -811,34 +856,6 @@ $totalContentItemHeight: 50px;
   text-overflow:ellipsis;
 }
 
-  .competitors-total {
-    position: absolute;
-    top: 5px;
-    left: 15px;
-    font-size: 20px;
-    color: #90bcff;
-    span {
-      color: #fff;
-      font-weight: bold;
-    }
-  }
-  .date {
-    position: absolute;
-    top: 5px;
-    right: 15px;
-    font-size: 20px;
-    .zh {
-      color: #90bcff;
-    }
-    .num {
-      color: #fff;
-    }
-  }
-  .my-dv-page {
-    background-image: url("~$ui/assets/bg/03.jpg");
-    background-size: cover;
-  }
-
   // 倒计时
   .countdown-container {
     display: flex;
@@ -846,10 +863,10 @@ $totalContentItemHeight: 50px;
     justify-content: center;
 
     .countdown {
-      $heightCountdown: 100px;
+      $heightCountdown: 60px;
       width: 400px;
       height: $heightCountdown;
-      margin: 0;
+      margin: 10px 0 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -860,15 +877,23 @@ $totalContentItemHeight: 50px;
       font-size: 35px;
       cursor: pointer;
       .part {
-        width: 45%;
+        width: 50%;
         height: $heightCountdown;
         line-height: $heightCountdown;
         text-align: right;
         .clock {
           display: inline-block;
-          width: 30px;
-          height: 30px;
-          background-image: url("../../assets/img-common/clock.png");
+          // width: 30px;
+          height: 100%;
+          @include center;
+          .img {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-image: url("../../assets/img-common/clock.png");
+            background-size: cover;
+            background-position: 0 5px;
+          }
         }
       }
       .part2 {
@@ -902,9 +927,10 @@ $totalContentItemHeight: 50px;
     }
   }
 
+
   // 答题概况
   .gaikuang {
-    height: 210px;
+    height: $gaikuangH;
     background-image: url("../../assets/img-person/person-bs-bg-left.png");
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -918,6 +944,7 @@ $totalContentItemHeight: 50px;
       .kemu {
         width: 25%;
         @include center;
+        transition: all .5s ease;
       }
       .title { // 窝点勘查
         width: 35%;
@@ -925,6 +952,7 @@ $totalContentItemHeight: 50px;
         margin-right: -50px;
         font-family: 'Demo';
         color: #fff;
+        @include wordBreak;
         span {
           margin-left: -60px;
         }
@@ -940,14 +968,19 @@ $totalContentItemHeight: 50px;
       }
       .active {
         background-image: url("../../assets/img-person/person-bs-km-now.png");
+        background-size: 125% 80%;
         color: #ffd801;
+        font-weight: bold;
+        font-size: 21px;
       }
       .inactive {
         background-image: url("../../assets/img-person/person-bs-km-lock.png");
+        background-size: 125% 80%;
       }
     }
     .bottom {
-      height: 140px;
+      // height: 140px;
+      height: 200px;
       display: flex;
       .left, .right {
         width: 50%;
@@ -963,12 +996,13 @@ $totalContentItemHeight: 50px;
         font-size: 16px;
         .text {
           margin-top: -10px;
+          font-size: 22px;
         }
         .number {
-          margin-top: 5px;
-          font-size: 28px;
+          margin-top: 15px;
+          font-size: 44px;
           &>span {
-            font-size: 16px;
+            font-size: 24px;
           }
         }
       }
@@ -979,14 +1013,21 @@ $totalContentItemHeight: 50px;
         .online {
           display: flex;
           .online-img {
-            width: 40%;
-            background-image: url("../../assets/img-person/person-bs-online.png");
-            background-size: contain;
-            background-position: right;
-            background-repeat: no-repeat;
-            margin-right: 10%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            .img {
+              display: inline-block;
+              width: 76px;
+              height: 76px;
+              background-image: url("../../assets/img-person/person-bs-online.png");
+              background-size: contain;
+              background-position: right;
+              background-repeat: no-repeat;
+            }
           }
-          .finish-img {
+          .finish-img .img {
             background-image: url("../../assets/img-person/person-bs-done.png");
           }
           .online-text {
@@ -995,10 +1036,10 @@ $totalContentItemHeight: 50px;
             flex-direction: column;
             justify-content: space-evenly;
             & > div:first-child {
-              font-size: 16px;
+              font-size: 22px;
             }
             & > div:last-child {
-              font-size: 28px;
+              font-size: 30px;
               color: $blueFont;
             }
           }
@@ -1020,7 +1061,8 @@ $totalContentItemHeight: 50px;
 
   // 列表
   .list-container {
-    height: calc(100% - 210px);
+    // $gaikuangH
+    height: calc(100% - 270px);
     overflow-y: auto;
     font-weight: bold;
     font-size: 20px;
@@ -1037,6 +1079,8 @@ $totalContentItemHeight: 50px;
       display: flex;
       height: 30px;
       line-height: 30px;
+      font-size: 16px;
+      font-weight: normal;
       span {
         @include wordBreak;
       }
@@ -1048,6 +1092,8 @@ $totalContentItemHeight: 50px;
       // line-height: $heightCommon;
       color: #fff;
       margin: 12px 0 0;
+      font-size: 18px;
+      font-weight: normal;
       // background: $listBg;
       background-image: url("../../assets/img-common/top10.png");
       background-size: 103% 100%;
@@ -1060,7 +1106,14 @@ $totalContentItemHeight: 50px;
         height: $heightTop3;
         line-height: $heightTop3;
         font-size: 20px;
-        // color: $yellowFont;
+        // 名字
+        .name {
+          font-size: 20px;
+        }
+        // 总分
+        &>span:last-child {
+          font-size: 24px;
+        }
       }
 
       &:nth-child(1) {
@@ -1068,7 +1121,7 @@ $totalContentItemHeight: 50px;
         background-image: url("../../assets/img-common/top1-1.png");
         background-size: 102% 120%;
         background-repeat: no-repeat;
-        span:first-child {
+        &>span:first-child {
           // todo url
           background-image: url("../../assets/img-common/top1-icon.png");
           // background-position: center;
@@ -1081,7 +1134,7 @@ $totalContentItemHeight: 50px;
         background-image: url("../../assets/img-common/top2-1.png");
         background-size: 102% 120%;
         background-repeat: no-repeat;
-        span:first-child {
+        &>span:first-child {
           // todo url
           background-image: url("../../assets/img-common/top2-icon.png");
           // background-position: center;
@@ -1095,7 +1148,7 @@ $totalContentItemHeight: 50px;
         background-image: url("../../assets/img-common/top3-1.png");
         background-size: 102% 120%;
         background-repeat: no-repeat;
-        span:first-child {
+        &>span:first-child {
           // todo url
           background-image: url("../../assets/img-common/top3-icon.png");
           // background-position: center;
@@ -1103,14 +1156,6 @@ $totalContentItemHeight: 50px;
           background-repeat: no-repeat;
         }
       }
-      
-      // 第一、三名的名次 渐变
-      // &:nth-child(1), &:nth-child(3) {
-      //   span:first-child {
-      //     background: linear-gradient(90deg, #ffff00, transparent);
-      //   }
-      // }
-      // todo
 
       // 省份
       .province {
@@ -1242,8 +1287,20 @@ $totalContentItemHeight: 50px;
         .image-wrap {
           width: 120px;
           height: 150px;
-          border: 2px solid #ddd;
+          // border: 2px solid #ddd;
           border-radius: 5px;
+          background-image: url("../../assets/images/avatar-bg.png");
+          background-size: 130% 122%;
+          background-position: center;
+          @include center;
+          .img {
+            width: 96%;
+            height: 96%;
+            background-image: url("../../assets/img-common/avatar-default.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+          }
         }
       }
 
@@ -1389,8 +1446,8 @@ $totalContentItemHeight: 50px;
         .img {
           width: 70px;
           height: 80px;
-          background-image: url("../../assets/images/avatar.png");
-          background-size: contain;
+          background-image: url("../../assets/img-common/avatar-default-1.png");
+          background-size: 100% 100%;
           background-repeat: no-repeat;
         }
         .name-rank {
@@ -1417,6 +1474,7 @@ $totalContentItemHeight: 50px;
           .correct {
             font-size: 20px;
             color: #ffe400;
+            white-space: nowrap;
           }
         }
         .text {
@@ -1451,5 +1509,19 @@ $totalContentItemHeight: 50px;
   }
   .list-complete-leave-active {
     position: absolute;
+  }
+
+  /* 可以设置不同的进入和离开动画 */
+  /* 设置持续时间和动画函数 */
+  .slide-fade-enter-active {
+    transition: all 1.3s ease;
+  }
+  .slide-fade-leave-active {
+    transition: all 1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-fade-enter, .slide-fade-leave-to
+  /* .slide-fade-leave-active for below version 2.1.8 */ {
+    transform: translateX(50px) translateY(-30px) scale(0.1);
+    opacity: 0;
   }
 </style>

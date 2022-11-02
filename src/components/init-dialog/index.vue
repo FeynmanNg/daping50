@@ -38,7 +38,7 @@
       <el-form-item label="阶段" v-for="(item, i) in form.arrSub" :key="i + 'arrSub'">
         <el-input v-model="item.name" label="阶段">
           <template slot="prepend">
-            <el-select name="select" v-model="item.subject" style="width: 150px;">
+            <el-select name="select" v-model="item.subject" style="min-width: 250px;">
               <el-option v-for="(o, i) in options" :key="i + o.label" :label="o.label" :value="o.value"></el-option>
             </el-select>
             <!-- <el-input v-model="item.id" placeholder="阶段id" style="width: 150px;"></el-input> -->
@@ -146,6 +146,9 @@ export default {
     },
     // 删除
     onDel(i) {
+      if (this.form.arrSub.length === 1) {
+        return;
+      }
       this.form.arrSub.splice(i, 1);
     },
     onBus({ type, data }) {

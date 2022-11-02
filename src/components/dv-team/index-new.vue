@@ -1,9 +1,5 @@
 <template>
-  <!-- <my-dv-page width="100%" height="100%"> -->
   <my-dv-page v-bind="$attrs">
-    <!-- <div class="bg-container">
-      <my-dv-starry :opacity="0.4"></my-dv-starry>
-    </div> -->
     <div class="bg-container" style="background-size: 100% 100%">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
       <my-dv-box layout
@@ -27,11 +23,14 @@
       </my-dv-box>
     </div>
 
-    <my-dv-header5>
-      <span class="competitors-total">参赛总人数：<span>{{totalPeople || 0}}</span>&nbsp;人</span>
+    <!-- <my-dv-header5>
+      <span class="competitors-total">
+        <span class="zh">参赛总人数：</span>
+        <span class="num">{{totalPeople || 0}}</span>
+        <span class="zh">&nbsp;人</span>
+      </span>
       <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title>
       <span class="date">
-        <!-- <span>{{formatDateStr}}&nbsp;</span> -->
         <span>
           <span class="num">{{formatDateStr.y}}</span><span class="zh">&nbsp;年&nbsp;</span>
           <span class="num">{{formatDateStr.M}}</span><span class="zh">&nbsp;月&nbsp;</span>
@@ -40,13 +39,32 @@
         <span class="num" v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
         <span class="zh">&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
       </span>
-    </my-dv-header5>
+    </my-dv-header5> -->
+    <div class="main-title">
+      <span class="competitors-total">
+        <span class="zh">参赛总人数：</span>
+        <span class="num">{{totalPeople || 0}}</span>
+        <span class="zh">&nbsp;人</span>
+      </span>
+      <span class="title">
+        {{form.title}}
+      </span>
+      <span class="date">
+        <span>
+          <span class="num">{{formatDateStr.y}}</span><span class="zh">&nbsp;年&nbsp;</span>
+          <span class="num">{{formatDateStr.M}}</span><span class="zh">&nbsp;月&nbsp;</span>
+          <span class="num">{{formatDateStr.d}}</span><span class="zh">&nbsp;日&nbsp;</span>
+        </span>
+        <span class="num" v-if="timeStr[2]">&nbsp;{{`${timeStr[0][0]}${timeStr[0][1]}:${timeStr[1][0]}${timeStr[1][1]}`}}</span>
+        <span class="zh">&nbsp;{{`农历${lunar.monthCn}${lunar.dayCn}`}}</span>
+      </span>
+    </div>
 
     <my-dv-box layout direction="column" :gap="10" top="90px" width="calc(100% - 20px)"
                height="calc(100% - 100px)"
                x-align="center">
       <!-- 左侧 总分榜 -->
-      <my-dv-box layout :gap="10" :weight="2" height="100%">
+      <my-dv-box layout :gap="10" :weight="2" height="100%" padding="0 0 0 20px">
         <my-dv-box class="zfb-bg" width="100%" fill="rgba(255,255,255,0.05)">
           <div class="list-container">
             <!-- 表头 -->
@@ -59,31 +77,21 @@
             </div>
             <!-- 列表内容 -->
             <div class="content" v-if="rank1Data && rank1Data.length">
-            <!-- <div class="content"> -->
-              <!-- <div class="top5-bg" v-show="rank1Data.length >= 5"></div> -->
               <transition-group name="list-complete">
                 <div
                   v-for="(item, i) in rank1Data"
-                  v-show="i < 15"
+                  v-show="i < 20"
                   :key="item.areaCode"
                   class="content-item list-complete-item">
                   <span>{{i > 2 ? item.rankNo : ''}}</span>
-                  <span>{{item.province}}</span>
+                  <span :class="{ 'text-scroll-wrap': item.province.length > 4 }">
+                    <span :class="{ 'text-scroll-item': item.province.length > 4 }">{{item.province}}</span>
+                  </span>
+                  <!-- <span>{{item.province}}</span> -->
                   <span>{{getValue(item.competitionScoreMap, form.subject1) || 0}}</span>
                   <span>{{getValue(item.competitionScoreMap, form.subject2) || 0}}</span>
                   <span>{{item.totalScore}}</span>
                 </div>
-                <!-- demo -->
-                <!-- <div
-                  v-for="(item, i) in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]"
-                  :key="item"
-                  class="content-item list-complete-item">
-                  <span>{{i > 2 ? item : ''}}</span>
-                  <span>福建省demo</span>
-                  <span>33</span>
-                  <span>44</span>
-                  <span>44</span>
-                </div> -->
               </transition-group>
               <!-- 最多支持 15 行 -->
             </div>
@@ -103,43 +111,33 @@
             <!-- <p class="countdown">倒计时：00:00:00</p> -->
             <div class="countdown" @click="onShowInit">
               <div class="part">
-                <span class="clock"></span>
-                倒计时：
+                <span class="clock">
+                  <span class="img"></span>
+                  &nbsp;倒计时：
+                </span>
               </div>
               <div class="part part2">
                 <my-dv-title class="my-dv-timer">
-                  <my-timer
+                  <!-- <my-timer
                     :target="countdown"
                     :auto="pause"
                     ref="timer"
-                    countdown></my-timer>
+                    countdown></my-timer> -->
+                    <timer
+                    :target="countdown"
+                    :auto="pause"
+                    ref="timer"
+                    countdown></timer>
                 </my-dv-title>
               </div>
             </div>
           </div>
-          <!-- 省排名上升至 -->
-          <!-- <div class="rank-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
-            <transition-group name="list-complete">
-              <div class="rank list-complete-item"
-                v-for="(item, i) in realTimeDynamicData"
-                v-show="i === 0"
-                :key="item.userId">
-                <p class="rank-content">
-                  【{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}】
-                  {{item.userName}}
-                  【{{item.province}}】
-                  已连续答对 {{item.continueRight}} 题
-                </p>
-                <p class="time">{{item.recordTime}}</p>
-              </div>
-            </transition-group>
-          </div> -->
         </div>
       </my-dv-box>
 
       <!-- 右侧 答题进度、实时动态 -->
-      <my-dv-box layout :gap="10" :weight="2" height="100%">
-        <my-dv-box class="dt-bg" width="100%" height="70%" fill="rgba(255,255,255,0.05)">
+      <my-dv-box layout :gap="10" :weight="2" height="100%" padding="0 20px 0 0">
+        <my-dv-box class="dt-bg" width="calc(100% - 20px)" height="70%" fill="rgba(255,255,255,0.05)">
           <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length">
           <!-- <div class="process-container"> -->
             <!-- 科目说明 -->
@@ -161,13 +159,17 @@
                 :key="item.areaCode"
                 class="process list-complete-item">
                 <span class="NO">NO.{{item.rankNo}}</span>
-                <span>{{item.province}}</span>
+                <span>
+                  <span :class="{ 'text-scroll-wrap': item.province.length > 4 }">
+                    <span :class="{ 'text-scroll-item': item.province.length > 4 }">{{item.province}}</span>
+                  </span>
+                </span>
                 <span class="line-wrap">
-                  <span class="line">
+                  <span class="line" v-if="form.subject1">
                     <span class="rate" :style="{ 'width': getValue(item.progressMap, form.subject1), 'max-width': '80%' }"></span>
                     <span class="num">{{getValue(item.progressMap, form.subject1, true)}}</span>
                   </span>
-                  <span class="line">
+                  <span class="line" v-if="form.subject2">
                     <span class="rate" :style="{ 'width': getValue(item.progressMap, form.subject2), 'max-width': '80%' }"></span>
                     <span class="num">{{getValue(item.progressMap, form.subject2, true)}}</span>
                   </span>
@@ -176,28 +178,37 @@
             </transition-group>
           </div>
         </my-dv-box>
-        <my-dv-box class="ss-bg" width="100%" height="30%" fill="rgba(255,255,255,0.05)">
+        <my-dv-box class="ss-bg" width="calc(100% - 20px)" height="30%" fill="rgba(255,255,255,0.05)">
           <div class="rt-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
-            <vue-seamless-scroll
+            <!-- <vue-seamless-scroll
                   class="warp"
                   :data="realTimeDynamicData"
                   :class-option="classOption"
-                  ref="seamlessScroll">
+                  ref="seamlessScroll"> -->
               <transition-group name="list-complete">
                 <div v-for="(item) in realTimeDynamicData" :key="item.userId" class="rt list-complete-item">
                   <div class="rt-time">{{item.recordTime}}</div>
                   <div class="rt-content">
-                    <span class="type left" :class="{ left: item % 2 === 0, right: item % 2 === 1 }">
+                    <span class="type" :class="{
+                      left: form.subject1ids.indexOf(item.competitionId) >= 0,
+                      right: form.subject1ids.indexOf(item.competitionId) < 0
+                    }">
                       [{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}]
                     </span>
-                    <span class="name-province">{{item.userName}}-{{item.province}}</span>
+                    <span class="name-province">
+                      <span :class="{ 'text-scroll-wrap': item.userName.length > 3 || item.province.length > 3 }">
+                        <span :class="{ 'text-scroll-item': item.userName.length > 3 || item.province.length > 3 }">
+                          {{item.userName}}-{{item.province}}
+                        </span>
+                      </span>
+                    </span>
                     <span class="hit">
                       已连续答对&nbsp;<span class="num">{{item.continueRight}}</span>&nbsp;题！
                     </span>
                   </div>
                 </div>
               </transition-group>
-            </vue-seamless-scroll>
+            <!-- </vue-seamless-scroll> -->
           </div>
         </my-dv-box>
       </my-dv-box>
@@ -216,17 +227,19 @@
   import coordinates from '$ui/dv/utils/coordinates';
   import solarLunar from 'solarlunar';
   import initDialog from '../init-dialog';
+  import timer from '../timer';
   // import mapComp from '../map/index-new';
   import mapComp from '../map/index-new-1';
   import storage from '@/helper/storage';
-  // import { onPause, onStart, onReset } from '@/helper/bus';
-  import {
-    totalContestantsNumber,
-    provinceAnswerProgress,
-    realTimeDynamic,
-    competitionProvinceRank
+  import { onPause, onStart, onReset } from '@/helper/bus';
+  // import {
+  //   totalContestantsNumber,
+  //   provinceAnswerProgress,
+  //   realTimeDynamic,
+  //   competitionProvinceRank
   // } from '$my/code/api/dv';
-  } from '@/mock'; // todo
+  // } from '@/mock'; // todo
+  import api from '@/helper/api';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
   const REFRESH_STEPS_DT = window.__GLOBAL__.REFRESH_STEPS_DT;
@@ -235,7 +248,7 @@
   const ORG = window.__GLOBAL__.ORG;
 
   export default {
-    components: { mapComp, initDialog },
+    components: { mapComp, initDialog, timer },
     data() {
       const form = storage.getForm();
       const timeRange = form.timeRange || [];
@@ -350,6 +363,7 @@
       },
       getValue(obj, key, needPercent) {
         if (!obj) return needPercent ? '0%' : '0';
+        if (!key) return needPercent ? '0%' : '0';
         return obj[key] || '0';
       },
       initTime() {
@@ -364,17 +378,17 @@
           this.timeStr = timeStr;
 
           // 首次加载，达到比赛时间，自动倒计时
-          if (this.$refs.timer && this.form.timeRange && this.form.timeRange[0]) {
-            if (current - new Date(this.form.timeRange[0]) >= 0) {
-              if (!this.pause && this.startCountdown) {
-                this.$nextTick(() => {
-                  this.$refs.timer.start();
-                })
-                this.startCountdown = false;
-                this.pause = false;
-              }
-            }
-          }
+          // if (this.$refs.timer && this.form.timeRange && this.form.timeRange[0]) {
+          //   if (current - new Date(this.form.timeRange[0]) >= 0) {
+          //     if (!this.pause && this.startCountdown) {
+          //       this.$nextTick(() => {
+          //         this.$refs.timer.start();
+          //       })
+          //       this.startCountdown = false;
+          //       this.pause = false;
+          //     }
+          //   }
+          // }
         }, 1000);
 
         // 倒计时
@@ -384,26 +398,42 @@
           const endD = new Date(endT);
           const startD = new Date(startS);
           const now = new Date();
-
+          const nowY = now.getFullYear();
+          const nowM = now.getMonth();
+          const nowD = now.getDate();
+          endD.setFullYear(nowY);
+          endD.setMonth(nowM);
+          endD.setDate(nowD);
+          startD.setFullYear(nowY);
+          startD.setMonth(nowM);
+          startD.setDate(nowD);
+          console.log('比对时间', endD - now);
           // 修正倒计时
-          if (endD - now) { // 未到结束时间
+          if (endD - now > 0) { // 未到结束时间
             if (now - startD) { // 到达开始时间
               this.countdown = (endD - now) / 1000;
               console.log('修正倒计时', this.countdown, startD, endD, now);
+              this.pause = true;
+              this.$refs.timer.start();
             }
+          } else {
+            this.countdown = '00:00:00';
+            this.pause = false;
+            this.$refs.timer.stop();
+            // this.$refs.timer.reset()
           }
         }
 
         // 监听 两屏的倒计时，统一暂停开启
-        // onReset((data) => this.$refs.timer.reset());
-        // onStart((data) => {
-        //     this.$refs.timer.start();
-        //     this.pause = !this.pause;
-        // });
-        // onPause((data) => {
-        //     this.$refs.timer.stop();
-        //     this.pause = !this.pause;
-        // });
+        onReset((data) => this.$refs.timer.reset());
+        onStart((data) => {
+            this.$refs.timer.start();
+            this.pause = !this.pause;
+        });
+        onPause((data) => {
+            this.$refs.timer.stop();
+            this.pause = !this.pause;
+        });
       },
       init() {
         // 初始化
@@ -419,9 +449,9 @@
         const query = {
           competitionIds: sub1.concat(sub2)
         }
-        totalContestantsNumber(query).then(res => {
+        api.totalContestantsNumber(query).then(res => {
           console.log('参赛人数数据', res);
-          this.totalPeople = res; // todo
+          this.totalPeople = res || 0; // todo
         }).catch(e => {
           console.log(e);
         });
@@ -436,16 +466,16 @@
           },
           sortCompetitionName: this.form.subject1 // 排序比赛名
         }
-        provinceAnswerProgress(query).then(res => {
+        api.provinceAnswerProgress(query).then(res => {
           console.log('省份答题进度数据', res);
-          this.provinceAnswerProgressData = res;
+          this.provinceAnswerProgressData = res || [];
         }).catch(e => {
           console.log(e);
         });
         this.interval.provinceAnswerProgress.timer = setInterval(() => {
-          provinceAnswerProgress(query).then(res => {
+          api.provinceAnswerProgress(query).then(res => {
             console.log('省份答题进度数据', res);
-            this.provinceAnswerProgressData = res;
+            this.provinceAnswerProgressData = res || [];
           }).catch(e => {
             console.log(e);
           });
@@ -453,16 +483,19 @@
       },
       // 实时动态数据
       realTimeDynamic() {
-        realTimeDynamic().then(res => {
+        api.realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
-          this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+          if (res) {
+            this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+          }
         }).catch(e => {
           console.log(e);
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
-          realTimeDynamic().then(res => {
+          api.realTimeDynamic().then(res => {
             console.log('实时动态数据', res);
-            this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+            if (!res) return;
+            this.realTimeDynamicData.unshift(...res);
           }).catch(e => {
             console.log(e);
           });
@@ -474,16 +507,16 @@
           [this.form.subject1]: this.form.subject1ids,
           [this.form.subject2]: this.form.subject2ids
         };
-        competitionProvinceRank({ competitionMap }).then(res => {
+        api.competitionProvinceRank({ competitionMap }).then(res => {
           // console.log('总分榜', res);
-          this.rank1Data = res; // todo
+          this.rank1Data = res || []; // todo
         }).catch(e => {
           console.log(e);
         });
         this.interval.competitionProvinceRank.timer = setInterval(() => {
-          competitionProvinceRank({ competitionMap }).then(res => {
+          api.competitionProvinceRank({ competitionMap }).then(res => {
             // console.log('总分榜', res);
-            this.rank1Data = res; // todo
+            this.rank1Data = res || []; // todo
           }).catch(e => {
             console.log(e);
           });
@@ -493,12 +526,14 @@
   }
 </script>
 <style lang="scss" scoped>
+@import '@/assets/style/common';
   $blue: #00ffba;
   $purple: #c3a9ff;
   $blueFont: #00ccff;
   $titleHeight: 52px;
   // 总分榜，列表item高度
-  $totalContentItemHeight: 50px;
+  $totalContentItemHeight: 30px;
+  $totalContentItemHeightTop3: 50px;
 
   @mixin center {
     display: flex;
@@ -509,34 +544,6 @@
     overflow: hidden;
     white-space: nowrap; 
     text-overflow:ellipsis;
-  }
-
-  .competitors-total {
-    position: absolute;
-    top: 5px;
-    left: 15px;
-    font-size: 20px;
-    color: #90bcff;
-    span {
-      color: #fff;
-      font-weight: bold;
-    }
-  }
-  .date {
-    position: absolute;
-    top: 5px;
-    right: 15px;
-    font-size: 20px;
-    .zh {
-      color: #90bcff;
-    }
-    .num {
-      color: #fff;
-    }
-  }
-  .my-dv-page {
-    background-image: url("~$ui/assets/bg/03.jpg");
-    background-size: cover;
   }
 
   // bg
@@ -566,10 +573,10 @@
     justify-content: center;
 
     .countdown {
-      $heightCountdown: 100px;
+      $heightCountdown: 60px;
       width: 400px;
       height: $heightCountdown;
-      margin: 0;
+      margin: 10px 0 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -580,15 +587,23 @@
       font-size: 35px;
       cursor: pointer;
       .part {
-        width: 45%;
+        width: 50%;
         height: $heightCountdown;
         line-height: $heightCountdown;
         text-align: right;
         .clock {
           display: inline-block;
-          width: 30px;
-          height: 30px;
-          background-image: url("../../assets/img-common/clock.png");
+          // width: 30px;
+          height: 100%;
+          @include center;
+          .img {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-image: url("../../assets/img-common/clock.png");
+            background-size: cover;
+            background-position: 0 5px;
+          }
         }
       }
       .part2 {
@@ -643,9 +658,9 @@
   }
   // 总分榜
   .list-container {
-    height: calc(100% - 70px);
+    height: calc(100% - 80px);
     overflow-y: auto;
-    margin-top: 70px;
+    margin-top: 80px;
 
     .header {
 
@@ -654,7 +669,8 @@
         width: 20%;
         // color: $blueFont;
         color: #d6f0ff;
-        font-size: 20px;
+        // font-size: 20px;
+        font-size: 16px;
         font-weight: bold;
         text-align: center;
         margin-top: 10px;
@@ -680,22 +696,35 @@
         // border: 1px solid #ccc;
         border-radius: 5px;
         background-image: url("../../assets/img-common/top10.png");
-        background-size: contain;
+        background-size: cover;
         background-repeat: no-repeat;
         background-position: center bottom;
-        
+
+        &:nth-child(1), &:nth-child(2), &:nth-child(3) {
+          &>span:first-child {
+            display: inline-block;
+            height: 100%;
+            background-size: 85% 130%;
+            background-repeat: no-repeat;
+            background-position: center;
+            line-height: $totalContentItemHeight - 10px;
+          }
+        } 
         &:nth-child(1) {
           background-image: url("../../assets/img-common/top1.png");
           background-size: 103% 125%;
           background-repeat: no-repeat;
           background-position: center;
 
-          span:first-child {
+          &>span:first-child {
             background-image: url("../../assets/img-common/top1-icon.png");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center bottom;
-            line-height: $totalContentItemHeight - 10px;
+            // background-size: 85% 200%;
+            // background-repeat: no-repeat;
+            // background-position: center;
+            // line-height: $totalContentItemHeight - 10px;
+          }
+          &>span:last-child {
+            font-size: 24px;
           }
         }
         &:nth-child(2) {
@@ -704,12 +733,15 @@
           background-repeat: no-repeat;
           background-position: center;
 
-          span:first-child {
+          &>span:first-child {
             background-image: url("../../assets/img-common/top2-icon.png");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center bottom;
-            line-height: $totalContentItemHeight - 10px;
+            // background-size: 85% 200%;
+            // background-repeat: no-repeat;
+            // background-position: center;
+            // line-height: $totalContentItemHeight - 10px;
+          }
+          &>span:last-child {
+            font-size: 24px;
           }
         }
         &:nth-child(3) {
@@ -718,38 +750,40 @@
           background-repeat: no-repeat;
           background-position: center;
 
-          span:first-child {
+          &>span:first-child {
             background-image: url("../../assets/img-common/top3-icon.png");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center bottom;
-            line-height: $totalContentItemHeight - 10px;
+            // background-size: 85% 200%;
+            // background-repeat: no-repeat;
+            // background-position: center;
+            // line-height: $totalContentItemHeight - 10px;
+          }
+          &>span:last-child {
+            font-size: 24px;
           }
         }
 
-        &:nth-child(n > 10) {
-          background-image: url("../../assets/img-common/top-last.png");
-
-          span:first-child {
-            background-image: url("../../assets/images/team-4-5.png");
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center bottom;
-            line-height: $totalContentItemHeight - 10px;
-          }
+        &:nth-child(-n+3) {
+          height: $totalContentItemHeightTop3;
         }
+        &:nth-child(n+4):nth-child(-n+10) {
+          background-image: url("../../assets/img-common/top10.png");
+        }
+        &:nth-child(n+11):nth-child(-n+20) {
+          background-image: url("../../assets/img-common/top-last.png") !important;
+        }
+        
 
-        span {
+        &>span {
           display: inline-block;
           width: 20%;
           height: $totalContentItemHeight;
           line-height: $totalContentItemHeight;
           color: #fff;
-          font-size: 20px;
+          font-size: 18px;
           text-align: center;
           @include wordBreak();
           &:last-child {
-            color: #ffff00;
+            // color: #ffff00;
             font-weight: bold;
           }
         }
@@ -774,10 +808,10 @@
     $processW1: 15%; // NO.* 的宽度
     $processW2: 17%; // 省份的宽度 + margin 左右 1%
     $processW3: 65%; // 进度条和百分数的宽度
-    $h: 38px;
+    $h: 28px;
     // $h: calc(((100% - 20px) / 10)px);
     // 间距
-    .process { margin: 3px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
+    .process { margin: 10px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
     .process {
       height: $h;
       display: flex;
@@ -798,6 +832,7 @@
         color: #fff;
         border-radius: 5px;
         font-weight: bold;
+        font-size: 14px;
       }
       .line-wrap {
         display: flex;
@@ -806,11 +841,9 @@
           display: flex;
           height: 50%;
           &:first-child .rate {
-            // background: linear-gradient(90deg, #0033cc, #fc3367);
             background-image: url("../../assets/img-team/team-jd-progress-green.png");
           }
           &:last-child .rate {
-            // background: linear-gradient(90deg, #0033cc, #fec9ff);
             background-image: url("../../assets/img-team/team-jd-progress-purple.png");
           }
           .rate {
@@ -840,6 +873,8 @@
         overflow: hidden;
         white-space: nowrap; 
         text-overflow:ellipsis;
+        font-size: 18px;
+        font-weight: bold;
       }
       &>span:nth-child(3) { // 进度条
         width: $processW3;
@@ -864,6 +899,7 @@
     .process-desc {
       display: flex;
       justify-content: center;
+      padding: 10px 0;
       .desc {
         display: flex;
         justify-content: center;
@@ -904,21 +940,21 @@
   // 实时动态
   .rt-container {
     max-height: 430px;
-    margin-top: 70px;
+    margin-top: 80px;
     overflow-y: auto;
     .rt {
-      padding: 10px 20px;
+      padding: 10px 10px 0;
       line-height: 25px;
-      // border-bottom: 1px solid;
       .rt-time {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: bold;
       }
       .rt-content {
         font-size: 18px;
         padding-bottom: 10px;
-        border-bottom: 1px solid;
-        // @include center;
+        border-bottom: 1px solid #023976;
+        display: flex;
+        justify-content: space-between;
 
         .type {
           &.left {
@@ -929,9 +965,9 @@
           }
         }
         .name-province {
+          width: 120px;
           color: #fff;
           font-weight: bold;
-          margin: 0 30px;
         }
         .hit {
           color: #afcfff;

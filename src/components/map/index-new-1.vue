@@ -64,14 +64,22 @@
               </div>
               <div class="content">
                 <div class="img">
-                  <img :src="getImageUrl(item.rt.userId)" style="width: 100%; height: 100%" />
+                  <!-- <img :src="getImageUrl(item.rt.userId)" @error="onErrorImg" style="width: 100%; height: 100%" /> -->
+                  <img :src="item.rt.img" @error="onErrorImg($event, item.rt)" style="width: 100%; height: 100%" />
                 </div>
                 <div class="name-rank">
                   <div class="name">{{item.rt.userName}}</div>
                   <div class="rank">排名第 {{item.rankNo}}</div>
                 </div>
                 <div class="time">{{item.recordTime}}</div>
-                <div class="text">答对+1！连续答对{{item.rt.value}}题！</div>
+                <div class="text">
+                  <!-- 答对+1！连续答对{{item.rt.value}}题！ -->
+                  <span :class="{ 'text-scroll-wrap': item.rt.value > 1 }">
+                    <span :class="{ 'text-scroll-item': item.rt.value > 1 }">
+                      答对+1！连续答对{{item.rt.value}}题！
+                    </span>
+                  </span>
+                </div>
               </div>
             </div>
           </transition>
@@ -110,7 +118,12 @@
           <!-- 省份/总分 -->
           <div class="province">
             <div>{{item.value}}</div>
-            <div>{{item.province}}</div>
+            <div
+              :class="{
+                'top1': calculateTop1(item.value),
+                'top2': calculateTop2(item.value),
+                'top3': calculateTop3(item.value)
+              }">{{item.province}}</div>
           </div>
         </div>
       <!-- </transition-group> -->
@@ -174,6 +187,10 @@ export default {
   },
   methods: {
     getImageUrl,
+    onErrorImg(e, rt) {
+      console.log('图片加载出错', rt);
+      rt.img = require('../../assets/img-common/avatar-default.png');
+    },
     init() {
       if (this.form && this.form.subject1ids && this.form.subject2ids) {
         this.assembleRank();
@@ -253,6 +270,7 @@ export default {
         if (exist) {
           // 赋值
           exist.rt = rt;
+          exist.rt.img = this.getImageUrl(rt.userId); // 图片
           latest = true;
           console.log('组装完成 rt', exist.rt);
         }
@@ -300,13 +318,13 @@ export default {
     calculateTop2(value) {
       const temp = cloneDeep(this.rank).sort((a, b) => a.value - b.value);
       temp.pop();
-      return value === (temp[temp.length - 1].value || 0);
+      return value === (temp[temp.length - 1]?.value || 0);
     },
     calculateTop3(value) {
       const temp = cloneDeep(this.rank).sort((a, b) => a.value - b.value);
       temp.pop();
       temp.pop();
-      return value === (temp[temp.length - 1].value || 0);
+      return value === (temp[temp.length - 1]?.value || 0);
     },
     isTop(value) {
       return this.calculateTop1(value) || this.calculateTop2(value) || this.calculateTop3(value);
@@ -366,7 +384,7 @@ $blueFont: #00ccff;
       height: 68px;
       text-align: center;
       padding: 2px;
-      background: radial-gradient(40% 50%, $blueFont, transparent);
+      background: radial-gradient(40% 50% at 50% 50%, #002b84, transparent);
       border-radius: 50%;
       color: #fff;
       @include centerVertical;
@@ -374,12 +392,10 @@ $blueFont: #00ccff;
         @include wordBreak;
         color: #fff;
         font-weight: bold;
-        &:first-child { // 分数
-          
-        }
-        &:last-child { // 省
-        }
       }
+      .top1 { color: #f7ff7b; }
+      .top2 { color: #c9f2ff; }
+      .top3 { color: #ffcd7f; }
     }
     // 柱子+三角形
     .bar-box {
@@ -408,9 +424,9 @@ $blueFont: #00ccff;
           background-image: url("../../assets/img-team/team-bar-top3.png");
         }
         &.bar-top1, &.bar-top2, &.bar-top3 {
-          width: $barBoxW * 2;
-          transform: translateX(-10px);
-          background-size: 180% 150%;
+          width: $barBoxW;
+          // transform: translateX(-10px);
+          background-size: 380% 150%;
           background-repeat: no-repeat;
           background-position: center;
         }
@@ -499,10 +515,11 @@ $blueFont: #00ccff;
         .img {
           width: 70px;
           height: 90px;
-          background-image: url("../../assets/images/avatar.png");
+          background-image: url("../../assets/img-common/avatar-default.png");
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;
+          border: none;
         }
         .name-rank {
           min-width: 90px;
@@ -512,6 +529,7 @@ $blueFont: #00ccff;
           
           .name {
             font-size: 25px;
+            font-weight: bold;
             color: #fff;
           }
           .rank {
@@ -521,7 +539,9 @@ $blueFont: #00ccff;
           }
         }
         .text {
-          max-width: 200px;
+          width: 190px;
+          margin-right: 10px;
+          height: 20px;
           font-size: 20px;
           color: #ffe400;
         }

@@ -617,12 +617,12 @@ const rank1DataMock = Mock.mock({
 rank1DataMock.list.forEach(a => {
   a.province = a.province
     .replace('省', '')
-    .replace('自治区', '')
-    .replace('特别行政区', '')
+    // .replace('自治区', '')
+    // .replace('特别行政区', '')
     .replace('回族', '')
     .replace('藏族', '')
     .replace('壮族', '')
-    .replace('维吾尔', '');
+    // .replace('维吾尔', '');
 })
 const rank1DataMock2 = cloneDeep(rank1DataMock);
 rank1DataMock2.list
