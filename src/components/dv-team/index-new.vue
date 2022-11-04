@@ -550,7 +550,8 @@
   .bg-container {
     width: 100%;
     height: 100%;
-    background-image: url("../../assets/img-team/BG.png");
+    // background-image: url("../../assets/img-team/BG.png");
+    background-image: url("../../assets/img-team/map-bg.png");
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: bottom;

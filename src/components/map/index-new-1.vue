@@ -384,7 +384,7 @@ $blueFont: #00ccff;
       height: 68px;
       text-align: center;
       padding: 2px;
-      background: radial-gradient(40% 50% at 50% 50%, #002b84, transparent);
+      background: radial-gradient(40% 50% at 50% 50%, #008e97, transparent);
       border-radius: 50%;
       color: #fff;
       @include centerVertical;
