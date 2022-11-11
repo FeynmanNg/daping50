@@ -1,5 +1,15 @@
 <template>
-  <div :class="classes">{{displayValue}}</div>
+  <div :class="classes">
+    <!-- {{displayValue}} -->
+    <span
+      v-for="(s, i) in displayValue"
+      :class="{ 'bg': s !== ':'}"
+      :key="s + i">
+      <!-- <transition name="fade" mode="out-in"> -->
+        <span :class="{ 'test': changeIdx[i] }" :key="s + i">{{s}}</span>
+      <!-- </transition> -->
+    </span>
+  </div>
 </template>
 
 <script>
@@ -54,7 +64,8 @@
         dayjs: null,
         targetDayjs: null,
         minDayjs: null,
-        isFinish: false
+        isFinish: false,
+        changeIdx: {} // 当时间改动时，给类名
       }
     },
     computed: {
@@ -66,7 +77,10 @@
         }
       },
       displayValue() {
-        return this.dayjs ? this.dayjs.format(this.format) : ''
+        const result = this.dayjs ? this.dayjs.format(this.format) : ''
+        // return result;
+        const split = result.split('');
+        return split;
       }
     },
     methods: {
@@ -184,6 +198,18 @@
       target() {
         this.init()
       }
+      // displayValue(nV, oV) {
+      //   if (nV && oV && nV.length && oV.length) {
+      //     this.changeIdx = {};
+      //     nV.forEach((n, i) => {
+      //       if (n === ':' || n === oV[i]) {
+      //         this.changeIdx[i] = false;
+      //       } else {
+      //         this.changeIdx[i] = true;
+      //       }
+      //     })
+      //   }
+      // }
     },
     mounted() {
       this.init()
@@ -194,3 +220,42 @@
   }
 </script>
 
+<style lang="scss" scoped>
+.bg {
+  display: inline-block;
+  width: 40px;
+  height: 60px;
+  background-image: url("../../assets/img-common/clock-num.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: 0 3px;
+  text-align: center;
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    border-top: 1px solid #032d66;
+  }
+}
+
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.test {
+  animation: number .5s;
+}
+@keyframes number {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

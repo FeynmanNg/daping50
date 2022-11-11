@@ -52,7 +52,7 @@
           <!-- 弹框 -->
           <transition name="slide-fade">
             <div
-              v-if="item.rt && item.rt.show"
+              v-if="item.rt && item.rt.show && SHOW_MAP_MODAL"
               :class="{
                 'modal': 1,
                 'modal-left': item.rt.competitionType.left,
@@ -96,7 +96,7 @@
             </div>
             <!-- 三角 -->
             <div
-              v-if="item.rt"
+              v-if="item.rt && SHOW_MAP_MODAL"
               :class="{
                 'triangle': 1,
                 'triangle-left': item.rt && item.rt.competitionType.left,
@@ -123,7 +123,7 @@
                 'top1': calculateTop1(item.value),
                 'top2': calculateTop2(item.value),
                 'top3': calculateTop3(item.value)
-              }">{{item.province}}</div>
+              }">{{filterProvince(item.province)}}</div>
           </div>
         </div>
       <!-- </transition-group> -->
@@ -133,7 +133,7 @@
 
 <script>
 import PROVINCE from './province';
-import { getImageUrl } from '../../helper/image';
+import { getImageUrl, filterProvince } from '@/helper/utils';
 import { cloneDeep } from '../../../ui/lib/utils/util';
 
 export default {
@@ -157,6 +157,9 @@ export default {
     },
     provincesClassName() {
       return PROVINCE.keys;
+    },
+    SHOW_MAP_MODAL() {
+      return window.__GLOBAL__.SHOW_MAP_MODAL;
     }
   },
   watch: {
@@ -187,6 +190,7 @@ export default {
   },
   methods: {
     getImageUrl,
+    filterProvince,
     onErrorImg(e, rt) {
       console.log('图片加载出错', rt);
       rt.img = require('../../assets/img-common/avatar-default.png');
@@ -201,19 +205,20 @@ export default {
       if (this.rank1Data && this.rank1Data.length) {
         const exist = this.rank1Data.find(r => r.rt);
         exist && (exist.show = false);
-
         const timer = setTimeout(() => {
           const data = [];
           this.provinces.forEach(p => {
-            const exist = this.rank1Data
-              .find(r => this.valid(p, r.province));
+            const exist = this.rank1Data.find(r => this.valid(p, r.province));
             if (exist) {
               data.push({
                 province: p,
                 provinceClassName: this.provincesClassName[p],
                 value: exist ? exist.totalScore : -1,
                 rankNo: exist ? exist.rankNo : -1
-              })
+              });
+            }
+            if (exist && exist.province === '兵团') {
+              console.log(11111111111111, JSON.stringify(data));
             }
           });
           this.rank = data;
@@ -384,14 +389,20 @@ $blueFont: #00ccff;
       height: 68px;
       text-align: center;
       padding: 2px;
-      background: radial-gradient(40% 50% at 50% 50%, #008e97, transparent);
+      // background: radial-gradient(40% 50% at 50% 50%, #008e97, transparent);
+      // background: radial-gradient(40% 50% at 50% 50%, #00656c, transparent);
+      background: radial-gradient(40% 50% at 50% 50%, #0035a0, transparent);
       border-radius: 50%;
       color: #fff;
       @include centerVertical;
+      & div:first-child {
+        font-weight: bold;
+      }
       & div {
         @include wordBreak;
-        color: #fff;
-        font-weight: bold;
+        // color: #fff;
+        color: #b1e4ff;
+        // font-weight: bold;
       }
       .top1 { color: #f7ff7b; }
       .top2 { color: #c9f2ff; }
@@ -402,6 +413,7 @@ $blueFont: #00ccff;
       position: absolute;
       bottom: 48px;
       left: 164px;
+      z-index: 1;
 
       $barBoxW: 20px;
       // 柱子
@@ -409,7 +421,8 @@ $blueFont: #00ccff;
         width: $barBoxW;
         min-height: 20px;
         max-height: 150px;
-        background-image: url("../../assets/img-team/team-bar-green.png");
+        // background-image: url("../../assets/img-team/team-bar-green.png");
+        background-image: url("../../assets/img-team/team-bar-blue.png");
         background-size: 150% 120%;
         background-repeat: no-repeat;
         background-position: center;
@@ -433,13 +446,13 @@ $blueFont: #00ccff;
       }
       // top 1/2/3 标志
       .tag {
-        width: 25px;
-        height: 25px;
+        width: 50px;
+        height: 50px;
         background-image: url("../../assets/img-common/tag-top1.png");
-        background-size: 150% 150%;
+        background-size: 130% 130%;
         background-repeat: no-repeat;
         background-position: center;
-        transform: translateX(-2.5px);
+        transform: translate(-15px, 9px);
         &.tag-top1 {
           background-image: url("../../assets/img-common/tag-top1.png");
         }
@@ -452,9 +465,9 @@ $blueFont: #00ccff;
       }
       // 三角形
       .triangle {
-        width: $barBoxW;
-        height: $barBoxW / 2;
-        // transform: translateX(5px); // 根据 $barBoxW 来调整
+        width: $barBoxW * 2;
+        height: $barBoxW;
+        transform: translateX(-10px); // 根据 $barBoxW 来调整
         background-size: 50% 100%;
         background-repeat: no-repeat;
         background-position: center;

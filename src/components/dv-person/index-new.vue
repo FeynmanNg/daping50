@@ -130,9 +130,11 @@
                   </span>
                 </span>
                 <span class="province" :style="{ 'width': `${lengthLeft.area}%` }">
-                  <span :class="{ 'text-scroll-wrap': person.province.length > 4 }">
-                    <span :class="{ 'text-scroll-item': person.province.length > 4 }">{{person.province}}</span>
-                  </span>
+                  <!-- <span :class="{ 'text-scroll-wrap': person.province.length > 4 }"> -->
+                    <!-- <span :class="{ 'text-scroll-item': person.province.length > 4 }"> -->
+                      {{filterProvince(person.province)}}
+                    <!-- </span> -->
+                  <!-- </span> -->
                 </span>
                 <span
                   class="score"
@@ -194,7 +196,7 @@
                   <div class="province">
                     <span>
                       <span>{{playerIntroductionData.name}}</span>
-                      <span>{{playerIntroductionData.province}}</span>
+                      <span>{{filterProvince(playerIntroductionData.province)}}</span>
                     </span>
                   </div>
                   <div class="common">
@@ -202,7 +204,7 @@
                     <p>{{playerIntroductionData.personnel}}</p>
                     <!-- <p>人员简介人员简介人员简介人员简介</p> -->
                   </div>
-                  <div class="common">
+                  <div class="common" v-if="SHOW_PERSON_COMPETITION_DECLARATION">
                     <p>比赛宣言：</p>
                     <p>{{playerIntroductionData.competitionDeclaration}}</p>
                     <!-- <p>比赛宣言比赛宣言比赛宣言比赛宣言比赛宣言</p> -->
@@ -336,9 +338,11 @@
                   </span>
                 </span>
                 <span class="province" :style="{ 'width': `${lengthRight.area}%` }">
-                  <span :class="{ 'text-scroll-wrap': person.province.length > 4 }">
-                    <span :class="{ 'text-scroll-item': person.province.length > 4 }">{{person.province}}</span>
-                  </span>
+                  <!-- <span :class="{ 'text-scroll-wrap': person.province.length > 4 }"> -->
+                    <!-- <span :class="{ 'text-scroll-item': person.province.length > 4 }"> -->
+                      {{filterProvince(person.province)}}
+                    <!-- </span> -->
+                  <!-- </span> -->
                 </span>
                 <span
                   class="score"
@@ -377,7 +381,7 @@
   // } from '$my/code/api/dv';
   // } from '@/mock'; // todo
   import api from '@/helper/api';
-  import { getImageUrl } from '../../helper/image';
+  import { getImageUrl, filterProvince } from '@/helper/utils';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
   // 宽度
@@ -391,6 +395,10 @@
   // 实时动态
   const REFRESH_STEPS_REALTIME_DYNAMIC = window.__GLOBAL__.REFRESH_STEPS_REALTIME_DYNAMIC;
   const ORG = window.__GLOBAL__.ORG;
+  // 个人 比赛宣言 显示
+  const SHOW_PERSON_COMPETITION_DECLARATION = window.__GLOBAL__.SHOW_PERSON_COMPETITION_DECLARATION;
+  // 个人 实时动态浮框 显示
+  const SHOW_PERSON_REAL_TIME_DYNAMIC = window.__GLOBAL__.SHOW_PERSON_REAL_TIME_DYNAMIC;
 
   export default {
     components: { initDialog, timer },
@@ -399,6 +407,8 @@
       const timeRange = form.timeRange || [];
       const steps = REFRESH_STEPS; // 刷新频率 *分钟
       return {
+        SHOW_PERSON_COMPETITION_DECLARATION,
+        SHOW_PERSON_REAL_TIME_DYNAMIC,
         ORG,
         form,
         steps, // 刷新频率 *分钟
@@ -529,6 +539,7 @@
     },
     methods: {
       getImageUrl,
+      filterProvince,
       onErrorImg(e, rt) {
         // console.log('图片加载出错', rt);
         rt.img = require('../../assets/img-common/avatar-default.png');
@@ -779,6 +790,8 @@
       realTimeDynamic() {
         api.realTimeDynamic().then(res => {
           // console.log('实时动态数据', res);
+          // 条件过滤
+          res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
           if (!res || res.length === 0) return;
           this.realTimeDynamicData = this.realTimeDynamicData.concat([res[0]]);
           if (this.realTimeDynamicData.length) {
@@ -792,7 +805,8 @@
         });
         this.interval.realTimeDynamic.timer = setInterval(() => {
           api.realTimeDynamic().then(res => {
-            // this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
+            // 条件过滤
+            res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
             if (res && res.length) {
               const last = res[res.length - 1];
               last.img = this.getImageUrl(last.userId);
@@ -1336,6 +1350,8 @@ $gaikuangH: 270px;
             color: $lightBlueFont;
             font-size: 22px;
             font-weight: bold;
+            max-height: 64px;
+            overflow: hidden;
           }
           & p:last-child {
             font-size: 20px;

@@ -41,8 +41,8 @@ export const answerProfileData = () => [
 
 export const playerIntroductionData = () => Mock.mock({
   'list|5': [{
-    competitionDeclaration: Mock.Random.csentence(5, 15), // 比赛宣言
-    personel: Mock.Random.csentence(5, 15), // 人员介绍
+    competitionDeclaration: Mock.Random.csentence(15, 30), // 比赛宣言
+    personnel: Mock.Random.csentence(15, 30), // 人员介绍
     province: '@province', // 省
     'userId|+1': 1001
   }]
@@ -613,20 +613,31 @@ const rank1DataMock = Mock.mock({
     totalScore: '@natural(1, 100)' // 总分
   }]
 });
+// 增加一个兵团
+rank1DataMock.list.push({
+  areaCode: Mock.Random.natural(10000),
+  competitionMap: {
+    科目一: Mock.Random.natural(1, 100),
+    科目二: Mock.Random.natural(1, 100)
+  },
+  province: '兵团',
+  rankNo: 35,
+  totalScore: 73
+})
 // 处理省份
 rank1DataMock.list.forEach(a => {
   a.province = a.province
     .replace('省', '')
-    // .replace('自治区', '')
-    // .replace('特别行政区', '')
+    .replace('自治区', '')
+    .replace('特别行政区', '')
     .replace('回族', '')
     .replace('藏族', '')
     .replace('壮族', '')
-    // .replace('维吾尔', '');
+    .replace('维吾尔', '');
 })
 const rank1DataMock2 = cloneDeep(rank1DataMock);
 rank1DataMock2.list
-  .sort((a, b) => a.totalScore - b.totalScore)
+  .sort((a, b) => b.totalScore - a.totalScore)
   .forEach((a, i) => {
     a.rankNo = i + 1;
     a.totalScore += 5;

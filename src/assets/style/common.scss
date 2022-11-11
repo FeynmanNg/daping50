@@ -1,6 +1,17 @@
 $blue: #00ffba;
 $purple: #c3a9ff;
 
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@mixin wordBreak {
+  overflow: hidden;
+  white-space: nowrap; 
+  text-overflow:ellipsis;
+}
+
 @font-face {
   font-family: "Demo";
   src: url("../../assets/subject-title.ttf");
@@ -111,4 +122,86 @@ $purple: #c3a9ff;
     background-image: url("~$ui/assets/bg/03.jpg");
     background-size: cover;
   }
+}
+
+// 倒计时
+.countdown-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .countdown {
+    $heightCountdown: 60px;
+    min-width: 500px;
+    height: $heightCountdown;
+    margin: 10px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // background: $blueFont;
+    // color: #035695;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 35px;
+    cursor: pointer;
+    .part {
+      width: 50%;
+      min-width: 200px;
+      height: $heightCountdown;
+      line-height: $heightCountdown;
+      text-align: right;
+      .clock {
+        display: inline-block;
+        // width: 30px;
+        height: 100%;
+        @include center;
+        .img {
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          background-image: url("../../assets/img-common/clock.png");
+          background-size: cover;
+          background-position: 0 5px;
+        }
+      }
+    }
+    .part2 {
+      width: 45%;
+      min-width: 300px;
+      text-align: left;
+      margin-top: -5px;
+      /deep/ .my-dv-title {
+        color: unset;
+      }
+    }
+  }
+}
+
+
+// 去除 滚动条
+.scroll-content::-webkit-scrollbar {
+  width:0px;
+  height:0px;
+}
+.scroll-content::-webkit-scrollbar-button    {
+  background-color:rgba(0,0,0,0);
+}
+.scroll-content::-webkit-scrollbar-track     {
+  background-color:rgba(0,0,0,0);
+}
+.scroll-content::-webkit-scrollbar-track-piece {
+  background-color:rgba(0,0,0,0);
+}
+.scroll-content::-webkit-scrollbar-thumb{
+  background-color:rgba(0,0,0,0);
+}
+.scroll-content::-webkit-scrollbar-corner {
+  background-color:rgba(0,0,0,0);
+}
+.scroll-content::-webkit-scrollbar-resizer  {
+  background-color:rgba(0,0,0,0);
+}
+.scroll-content::-webkit-scrollbar {
+  width:10px;
+  height:10px;
 }

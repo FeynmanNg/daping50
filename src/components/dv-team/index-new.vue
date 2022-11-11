@@ -80,12 +80,11 @@
               <transition-group name="list-complete">
                 <div
                   v-for="(item, i) in rank1Data"
-                  v-show="i < 20"
                   :key="item.areaCode"
                   class="content-item list-complete-item">
                   <span>{{i > 2 ? item.rankNo : ''}}</span>
                   <span :class="{ 'text-scroll-wrap': item.province.length > 4 }">
-                    <span :class="{ 'text-scroll-item': item.province.length > 4 }">{{item.province}}</span>
+                    <span :class="{ 'text-scroll-item': item.province.length > 4 }">{{filterProvince(item.province)}}</span>
                   </span>
                   <!-- <span>{{item.province}}</span> -->
                   <span>{{getValue(item.competitionScoreMap, form.subject1) || 0}}</span>
@@ -93,7 +92,6 @@
                   <span>{{item.totalScore}}</span>
                 </div>
               </transition-group>
-              <!-- 最多支持 15 行 -->
             </div>
           </div>
           <my-dv-loading v-if="loading"></my-dv-loading>
@@ -160,9 +158,11 @@
                 class="process list-complete-item">
                 <span class="NO">NO.{{item.rankNo}}</span>
                 <span>
-                  <span :class="{ 'text-scroll-wrap': item.province.length > 4 }">
-                    <span :class="{ 'text-scroll-item': item.province.length > 4 }">{{item.province}}</span>
-                  </span>
+                  <!-- <span :class="{ 'text-scroll-wrap': item.province.length > 4 }"> -->
+                    <!-- <span :class="{ 'text-scroll-item': item.province.length > 4 }"> -->
+                      {{filterProvince(item.province)}}
+                    <!-- </span> -->
+                  <!-- </span> -->
                 </span>
                 <span class="line-wrap">
                   <span class="line" v-if="form.subject1">
@@ -196,9 +196,9 @@
                       [{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}]
                     </span>
                     <span class="name-province">
-                      <span :class="{ 'text-scroll-wrap': item.userName.length > 3 || item.province.length > 3 }">
-                        <span :class="{ 'text-scroll-item': item.userName.length > 3 || item.province.length > 3 }">
-                          {{item.userName}}-{{item.province}}
+                      <span :class="{ 'text-scroll-wrap': item.userName.length > 4 }">
+                        <span :class="{ 'text-scroll-item': item.userName.length > 4 }">
+                          {{item.userName}}-{{filterProvince(item.province)}}
                         </span>
                       </span>
                     </span>
@@ -232,13 +232,7 @@
   import mapComp from '../map/index-new-1';
   import storage from '@/helper/storage';
   import { onPause, onStart, onReset } from '@/helper/bus';
-  // import {
-  //   totalContestantsNumber,
-  //   provinceAnswerProgress,
-  //   realTimeDynamic,
-  //   competitionProvinceRank
-  // } from '$my/code/api/dv';
-  // } from '@/mock'; // todo
+  import { filterProvince } from '@/helper/utils';
   import api from '@/helper/api';
 
   const REFRESH_STEPS = window.__GLOBAL__.REFRESH_STEPS;
@@ -347,6 +341,7 @@
       });
     },
     methods: {
+      filterProvince,
       onShowInit() {
         this.$refs.initDialog.dialogVisible = true;
       },
@@ -508,14 +503,14 @@
           [this.form.subject2]: this.form.subject2ids
         };
         api.competitionProvinceRank({ competitionMap }).then(res => {
-          // console.log('总分榜', res);
+          console.log('总分榜', res);
           this.rank1Data = res || []; // todo
         }).catch(e => {
           console.log(e);
         });
         this.interval.competitionProvinceRank.timer = setInterval(() => {
           api.competitionProvinceRank({ competitionMap }).then(res => {
-            // console.log('总分榜', res);
+            console.log('总分榜', res);
             this.rank1Data = res || []; // todo
           }).catch(e => {
             console.log(e);
@@ -535,23 +530,13 @@
   $totalContentItemHeight: 30px;
   $totalContentItemHeightTop3: 50px;
 
-  @mixin center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  @mixin wordBreak {
-    overflow: hidden;
-    white-space: nowrap; 
-    text-overflow:ellipsis;
-  }
-
   // bg
   .bg-container {
     width: 100%;
     height: 100%;
     // background-image: url("../../assets/img-team/BG.png");
-    background-image: url("../../assets/img-team/map-bg.png");
+    // background-image: url("../../assets/img-team/map-bg.png");
+    background-image: url("../../assets/img-team/BG-11-9.png");
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: bottom;
@@ -564,57 +549,6 @@
       color: #799ec7;
       text-align: center;
       font-size: 18px;
-    }
-  }
-
-  // 倒计时
-  .countdown-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .countdown {
-      $heightCountdown: 60px;
-      width: 400px;
-      height: $heightCountdown;
-      margin: 10px 0 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      // background: $blueFont;
-      // color: #035695;
-      color: #fff;
-      border-radius: 10px;
-      font-size: 35px;
-      cursor: pointer;
-      .part {
-        width: 50%;
-        height: $heightCountdown;
-        line-height: $heightCountdown;
-        text-align: right;
-        .clock {
-          display: inline-block;
-          // width: 30px;
-          height: 100%;
-          @include center;
-          .img {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background-image: url("../../assets/img-common/clock.png");
-            background-size: cover;
-            background-position: 0 5px;
-          }
-        }
-      }
-      .part2 {
-        width: 45%;
-        text-align: left;
-        margin-top: -5px;
-        /deep/ .my-dv-title {
-          color: unset;
-        }
-      }
     }
   }
 
@@ -809,16 +743,39 @@
     $processW1: 15%; // NO.* 的宽度
     $processW2: 17%; // 省份的宽度 + margin 左右 1%
     $processW3: 65%; // 进度条和百分数的宽度
-    $h: 28px;
+    $h: 38px;
     // $h: calc(((100% - 20px) / 10)px);
     // 间距
-    .process { margin: 10px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
+    .process { margin: 2px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
     .process {
       height: $h;
+      padding: 5px 0;
       display: flex;
+      position: relative;
+      
+      &:nth-child(1)::after {
+        background-image: url("../../assets/img-team/jd-bg-top1.png");
+      }
+      &:nth-child(2)::after {
+        background-image: url("../../assets/img-team/jd-bg-top2.png");
+      }
+      &:nth-child(3)::after {
+        background-image: url("../../assets/img-team/jd-bg-top3.png");
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: $h + 11px;
+        top: -6px;
+        left: -10px;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+
       &>span {
         height: 100%;
-        line-height: $h;
+        line-height: $h - 10px;
       }
       span {
         display: inline-block;
