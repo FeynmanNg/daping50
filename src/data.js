@@ -1,8 +1,28 @@
 import Mock from 'mockjs';
 import {cloneDeep} from '../ui/lib/utils/util';
-import storage from '@/helper/storage';
+// import storage from '@/helper/storage';
+import { zfbData } from '@/zfb';
 
-const form = storage.getForm() || {};
+// const mockForm = storage.getForm() || {};
+
+/**
+ * 测试环境
+ * 初始化表单的数据
+ */
+ export const mockForm = {
+  title: window.__GLOBAL__.PAGE_TITLE,
+  subject1: '窝点勘查',
+  subject2: '检查鉴定',
+  arrSub: [
+    { name: '科目一', subject: '窝点勘查' },
+    { name: '科目二', subject: '窝点勘查' },
+    { name: '科目一', subject: '检查鉴定' },
+    { name: '科目二', subject: '检查鉴定' }
+  ],
+  timeRange: ['2022-11-10 13:30:00', '2022-11-10 17:00:00'],
+  subject1ids: ['1001', '1002'],
+  subject2ids: ['2001', '2002']
+};
 
 export const answerProfileData = () => [
   {
@@ -11,7 +31,7 @@ export const answerProfileData = () => [
     finishedNumber: 41, // 已完成人数
     onlineNumber: 310, // 在线人数
     stageName: '科目一',
-    id: form.subject1ids[0] // todo 只为测试 需要页面表单的一致
+    id: mockForm.subject1ids[0] // todo 只为测试 需要页面表单的一致
   },
   {
     accuracyRate: '62%', // 准确率
@@ -19,7 +39,7 @@ export const answerProfileData = () => [
     finishedNumber: 62, // 已完成人数
     onlineNumber: 320, // 在线人数
     stageName: '科目二',
-    id: form.subject1ids[1] // todo 只为测试 需要页面表单的一致
+    id: mockForm.subject1ids[1] // todo 只为测试 需要页面表单的一致
   },
   {
     accuracyRate: '53%', // 准确率
@@ -27,7 +47,7 @@ export const answerProfileData = () => [
     finishedNumber: 33, // 已完成人数
     onlineNumber: 330, // 在线人数
     stageName: '科目一',
-    id: form.subject2ids[0] // todo 只为测试 需要页面表单的一致
+    id: mockForm.subject2ids[0] // todo 只为测试 需要页面表单的一致
   },
   {
     accuracyRate: '74%', // 准确率
@@ -35,7 +55,7 @@ export const answerProfileData = () => [
     finishedNumber: 34, // 已完成人数
     onlineNumber: 340, // 在线人数
     stageName: '科目二',
-    id: form.subject2ids[1] // todo 只为测试 需要页面表单的一致
+    id: mockForm.subject2ids[1] // todo 只为测试 需要页面表单的一致
   }
 ];
 
@@ -417,7 +437,7 @@ export const rankData = () => {
 export const realTimeDynamicData = () => Mock.mock({
   'list|1-1': [{
   // 'list|1-5': [{
-    'competitionId|1': form.subject1ids.concat(form.subject2ids), // 比赛id
+    'competitionId|1': mockForm.subject1ids.concat(mockForm.subject2ids), // 比赛id
     'continueRight|1-10': 1, // 连续答题
     province: '@province',
     recordTime: '@time', // 记录时间
@@ -635,7 +655,8 @@ rank1DataMock.list.forEach(a => {
     .replace('壮族', '')
     .replace('维吾尔', '');
 })
-const rank1DataMock2 = cloneDeep(rank1DataMock);
+// const rank1DataMock2 = cloneDeep(rank1DataMock);
+const rank1DataMock2 = cloneDeep(zfbData);
 rank1DataMock2.list
   .sort((a, b) => b.totalScore - a.totalScore)
   .forEach((a, i) => {
@@ -656,5 +677,6 @@ export const rank1Data = () => {
   //     totalScore: '@natural(1, 100)' // 总分
   //   }]
   // });
+
   return [rank1DataMock, rank1DataMock2][++rank1Index % 2];
 };

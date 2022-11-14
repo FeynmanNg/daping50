@@ -28,7 +28,7 @@ export default {
     四川: 'sichuan',
     贵州: 'guizhou',
     云南: 'yunnan',
-    陕西: 'shanxi-1',
+    陕西: 'shanxi-3',
     甘肃: 'gansu',
     青海: 'qinghai',
     台湾: 'taiwan',

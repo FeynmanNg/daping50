@@ -1,10 +1,13 @@
-import dateFormat from '$ui/utils/date'
+import dateFormat from '$ui/utils/date';
+// import { mockForm } from '@/data';
 
 const prefix = 'dv_prefix_';
+const isProd = process.env.NODE_ENV === 'production';
 
 export default {
   // 设置初始化form
   getForm() {
+    // const res = isProd ? JSON.parse(getValue('form') || '{}') : mockForm;
     const res = JSON.parse(getValue('form') || '{}');
     console.log('获取缓存', res);
     return res;
@@ -27,7 +30,7 @@ export default {
       value.subject2ids = value.subject2ids.split(',').filter(s => s);
     }
     const res = JSON.stringify(value);
-    console.log('设置缓存', res);
+    console.log(`设置缓存-【正式环境=${isProd}】`, res);
     return setValue('form', res);
   }
 }

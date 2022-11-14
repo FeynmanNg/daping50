@@ -46,8 +46,8 @@
     <div v-if="rank && rank.length">
       <!-- <transition-group name="slide-fade"> -->
         <div
-          v-for="item in rank"
-          :key="item.province"
+          v-for="(item, i) in rank"
+          :key="item.province + i"
           :class="{ 'base': 1, [item.provinceClassName]: 1 }">
           <!-- 弹框 -->
           <transition name="slide-fade">
@@ -89,9 +89,9 @@
               v-if="isTop(item.value)"
               :class="{
                 'tag': 1,
-                'tag-top1': calculateTop1(item.value),
+                'tag-top3': calculateTop3(item.value),
                 'tag-top2': calculateTop2(item.value),
-                'tag-top3': calculateTop3(item.value)
+                'tag-top1': calculateTop1(item.value)
               }">
             </div>
             <!-- 三角 -->
@@ -107,9 +107,9 @@
             <div
               :class="{
                 'bar': 1,
-                'bar-top1': calculateTop1(item.value),
+                'bar-top3': calculateTop3(item.value),
                 'bar-top2': calculateTop2(item.value),
-                'bar-top3': calculateTop3(item.value)
+                'bar-top1': calculateTop1(item.value)
               }"
               :style="`height: ${calculateHeight(item.value)}px;`">
             </div>
@@ -120,9 +120,9 @@
             <div>{{item.value}}</div>
             <div
               :class="{
-                'top1': calculateTop1(item.value),
+                'top3': calculateTop3(item.value),
                 'top2': calculateTop2(item.value),
-                'top3': calculateTop3(item.value)
+                'top1': calculateTop1(item.value)
               }">{{filterProvince(item.province)}}</div>
           </div>
         </div>
@@ -133,7 +133,7 @@
 
 <script>
 import PROVINCE from './province';
-import { getImageUrl, filterProvince } from '@/helper/utils';
+import { getImageUrl, filterProvince, validProvince } from '@/helper/utils';
 import { cloneDeep } from '../../../ui/lib/utils/util';
 
 export default {
@@ -208,7 +208,7 @@ export default {
         const timer = setTimeout(() => {
           const data = [];
           this.provinces.forEach(p => {
-            const exist = this.rank1Data.find(r => this.valid(p, r.province));
+            const exist = this.rank1Data.find(r => validProvince(p, r.province));
             if (exist) {
               data.push({
                 province: p,
@@ -216,9 +216,6 @@ export default {
                 value: exist ? exist.totalScore : -1,
                 rankNo: exist ? exist.rankNo : -1
               });
-            }
-            if (exist && exist.province === '兵团') {
-              console.log(11111111111111, JSON.stringify(data));
             }
           });
           this.rank = data;
@@ -248,7 +245,7 @@ export default {
         }, []);
         const data = [];
         this.provinces.forEach(p => {
-          const exist = dedup.find(r => this.valid(p, r.province));
+          const exist = dedup.find(r => validProvince(p, r.province));
           if (exist) {
             data.push({
               province: p,
@@ -271,7 +268,7 @@ export default {
       const reverse = cloneDeep(this.realTimeDynamic).reverse();
       reverse.forEach((rt) => {
         if (latest) return;
-        const exist = this.rank.find(r => this.valid(r.province, rt.province));
+        const exist = this.rank.find(r => validProvince(r.province, rt.province));
         if (exist) {
           // 赋值
           exist.rt = rt;
@@ -280,10 +277,6 @@ export default {
           console.log('组装完成 rt', exist.rt);
         }
       });
-    },
-    // 判断省 是否存在
-    valid(a, b) {
-      return a.indexOf(b) >= 0 || b.indexOf(a) >= 0;
     },
     validForm() {
       return this.form && this.form.subject1ids && this.form.subject2ids;
@@ -333,9 +326,6 @@ export default {
     },
     isTop(value) {
       return this.calculateTop1(value) || this.calculateTop2(value) || this.calculateTop3(value);
-    },
-    validProvince(p1, p2) {
-      return p1.indexOf(p2) >= 0 || p2.indexOf(p1) >= 0;
     }
   }
 }
@@ -411,7 +401,8 @@ $blueFont: #00ccff;
     // 柱子+三角形
     .bar-box {
       position: absolute;
-      bottom: 48px;
+      // bottom: 48px;
+      bottom: 42px;
       left: 164px;
       z-index: 1;
 
@@ -427,14 +418,14 @@ $blueFont: #00ccff;
         background-repeat: no-repeat;
         background-position: center;
         transition: height .6s;
-        &.bar-top1 {
-          background-image: url("../../assets/img-team/team-bar-top1.png");
+        &.bar-top3 {
+          background-image: url("../../assets/img-team/team-bar-top3.png");
         }
         &.bar-top2 {
           background-image: url("../../assets/img-team/team-bar-top2.png");
         }
-        &.bar-top3 {
-          background-image: url("../../assets/img-team/team-bar-top3.png");
+        &.bar-top1 {
+          background-image: url("../../assets/img-team/team-bar-top1.png");
         }
         &.bar-top1, &.bar-top2, &.bar-top3 {
           width: $barBoxW;
@@ -453,14 +444,14 @@ $blueFont: #00ccff;
         background-repeat: no-repeat;
         background-position: center;
         transform: translate(-15px, 9px);
-        &.tag-top1 {
-          background-image: url("../../assets/img-common/tag-top1.png");
+        &.tag-top3 {
+          background-image: url("../../assets/img-common/tag-top3.png");
         }
         &.tag-top2 {
           background-image: url("../../assets/img-common/tag-top2.png");
         }
-        &.tag-top3 {
-          background-image: url("../../assets/img-common/tag-top3.png");
+        &.tag-top1 {
+          background-image: url("../../assets/img-common/tag-top1.png");
         }
       }
       // 三角形

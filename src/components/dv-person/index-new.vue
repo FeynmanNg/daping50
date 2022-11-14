@@ -1,6 +1,6 @@
 <template>
-  <!-- <my-dv-page width="100vw" height="100vh" v-bind="$attrs"> -->
-  <my-dv-page v-bind="$attrs">
+  <my-dv-page fit v-bind="$attrs">
+  <!-- <my-dv-page v-bind="$attrs"> -->
     <div class="bg-container">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
       <!-- <my-dv-starry :opacity="0.4" width="100vw" height="100vh"></my-dv-starry> -->
@@ -121,7 +121,6 @@
               <div
                 :class="{ 'content': 1, 'list-complete-item': 1, 'content-last': i >= 10 }"
                 v-for="(person, i) in listLeft"
-                v-show="i < 15"
                 :key="person.userId">
                 <span :style="{ 'width': `${lengthLeft.no}%` }">{{i > 2 ? person.rankNo : ''}}</span>
                 <span class="name" :style="{ 'width': `${lengthLeft.name}%` }">
@@ -329,7 +328,6 @@
               <div
                 :class="{ 'content': 1, 'list-complete-item': 1, 'content-last': i >= 10 }"
                 v-for="(person, i) in listRight"
-                v-show="i < 15"
                 :key="person.userId">
                 <span :style="{ 'width': `${lengthRight.no}%` }">{{i > 2 ? person.rankNo : ''}}</span>
                 <span class="name" :style="{ 'width': `${lengthRight.name}%` }">
@@ -545,7 +543,8 @@
         rt.img = require('../../assets/img-common/avatar-default.png');
       },
       onShowInit() {
-        this.$refs.initDialog.dialogVisible = true;
+        const isProd = process.env.NODE_ENV === 'production';
+        this.$refs.initDialog.dialogVisible = isProd;
       },
       onResetTime() {
         this.$refs.timer.reset();
@@ -714,7 +713,7 @@
         api.rank({
           competitionIds: this.form.subject1ids,
           pageNo: 1,
-          pageSize: 15
+          pageSize: 99999
         }).then(res => {
           if (res.list) { // todo
             this.listLeft = res.list || [];
@@ -730,7 +729,7 @@
         api.rank({
           competitionIds: this.form.subject2ids,
           pageNo: 1,
-          pageSize: 15
+          pageSize: 99999
         }).then(res => {
           // console.log('右列表', res);
           if (res.list) { // todo
@@ -1105,7 +1104,7 @@ $gaikuangH: 270px;
       height: $heightCommon;
       // line-height: $heightCommon;
       color: #fff;
-      margin: 12px 0 0;
+      margin: 7px 0 0;
       font-size: 18px;
       font-weight: normal;
       // background: $listBg;

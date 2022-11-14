@@ -1,5 +1,6 @@
 <template>
-  <my-dv-page v-bind="$attrs">
+  <my-dv-page fit v-bind="$attrs">
+  <!-- <my-dv-page v-bind="$attrs"> -->
     <div class="bg-container" style="background-size: 100% 100%">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
       <my-dv-box layout
@@ -80,6 +81,26 @@
               <transition-group name="list-complete">
                 <div
                   v-for="(item, i) in rank1Data"
+                  v-show="i < 10"
+                  :key="item.areaCode"
+                  class="content-item list-complete-item">
+                  <span>{{i > 2 ? item.rankNo : ''}}</span>
+                  <span :class="{ 'text-scroll-wrap': item.province.length > 4 }">
+                    <span :class="{ 'text-scroll-item': item.province.length > 4 }">{{filterProvince(item.province)}}</span>
+                  </span>
+                  <!-- <span>{{item.province}}</span> -->
+                  <span>{{getValue(item.competitionScoreMap, form.subject1) || 0}}</span>
+                  <span>{{getValue(item.competitionScoreMap, form.subject2) || 0}}</span>
+                  <span>{{item.totalScore}}</span>
+                </div>
+              </transition-group>
+            </div>
+
+            <div class="content content-last" v-if="rank1Data && rank1Data.length">
+              <transition-group name="list-complete">
+                <div
+                  v-for="(item, i) in rank1Data"
+                  v-show="i >= 10"
                   :key="item.areaCode"
                   class="content-item list-complete-item">
                   <span>{{i > 2 ? item.rankNo : ''}}</span>
@@ -135,7 +156,7 @@
 
       <!-- 右侧 答题进度、实时动态 -->
       <my-dv-box layout :gap="10" :weight="2" height="100%" padding="0 20px 0 0">
-        <my-dv-box class="dt-bg" width="calc(100% - 20px)" height="70%" fill="rgba(255,255,255,0.05)">
+        <my-dv-box :weight="6" class="dt-bg" width="calc(100% - 20px)" fill="rgba(255,255,255,0.05)">
           <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length">
           <!-- <div class="process-container"> -->
             <!-- 科目说明 -->
@@ -178,7 +199,7 @@
             </transition-group>
           </div>
         </my-dv-box>
-        <my-dv-box class="ss-bg" width="calc(100% - 20px)" height="30%" fill="rgba(255,255,255,0.05)">
+        <my-dv-box :weight="5" class="ss-bg" width="calc(100% - 20px)" fill="rgba(255,255,255,0.05)">
           <div class="rt-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
             <!-- <vue-seamless-scroll
                   class="warp"
@@ -240,6 +261,8 @@
   const REFRESH_STEPS_COMPETITION_PROVINCE_RANK = window.__GLOBAL__.REFRESH_STEPS_COMPETITION_PROVINCE_RANK;
   const REFRESH_STEPS_REALTIME_DYNAMIC = window.__GLOBAL__.REFRESH_STEPS_REALTIME_DYNAMIC;
   const ORG = window.__GLOBAL__.ORG;
+  // 个人 实时动态浮框 显示
+  const SHOW_PERSON_REAL_TIME_DYNAMIC = window.__GLOBAL__.SHOW_PERSON_REAL_TIME_DYNAMIC;
 
   export default {
     components: { mapComp, initDialog, timer },
@@ -251,6 +274,7 @@
         ORG,
         form,
         steps,
+        SHOW_PERSON_REAL_TIME_DYNAMIC,
         title: form.title || '',
         subject1: form.subject1 || '',
         subject2: form.subject2 || '',
@@ -343,7 +367,8 @@
     methods: {
       filterProvince,
       onShowInit() {
-        this.$refs.initDialog.dialogVisible = true;
+        const isProd = process.env.NODE_ENV === 'production';
+        this.$refs.initDialog.dialogVisible = isProd;
       },
       onResetTime() {
         this.$refs.timer.reset();
@@ -481,6 +506,8 @@
         api.realTimeDynamic().then(res => {
           console.log('实时动态数据', res);
           if (res) {
+            // 条件过滤
+            res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
             this.realTimeDynamicData = this.realTimeDynamicData.concat(res);
           }
         }).catch(e => {
@@ -490,6 +517,8 @@
           api.realTimeDynamic().then(res => {
             console.log('实时动态数据', res);
             if (!res) return;
+            // 条件过滤
+            res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
             this.realTimeDynamicData.unshift(...res);
           }).catch(e => {
             console.log(e);
@@ -594,7 +623,7 @@
   // 总分榜
   .list-container {
     height: calc(100% - 80px);
-    overflow-y: auto;
+    // overflow-y: auto;
     margin-top: 80px;
 
     .header {
@@ -611,6 +640,16 @@
         margin-top: 10px;
       }
     }
+    // 10名以后的滚动
+    .content-last {
+      max-height: 375px;
+      margin-top: -8px;
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width:0px;
+        height:0px;
+      }
+    }
     .content {
       position: relative;
       // padding-top: 5px;
@@ -625,7 +664,7 @@
 
       .content-item {
         height: $totalContentItemHeight;
-        margin: 8px;
+        margin: 7px;
         display: flex;
         align-items: center;
         // border: 1px solid #ccc;
@@ -703,7 +742,7 @@
         &:nth-child(n+4):nth-child(-n+10) {
           background-image: url("../../assets/img-common/top10.png");
         }
-        &:nth-child(n+11):nth-child(-n+20) {
+        &:nth-child(n+11) {
           background-image: url("../../assets/img-common/top-last.png") !important;
         }
         

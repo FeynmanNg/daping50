@@ -15,3 +15,7 @@ export const filterProvince = (provinceName = '') => {
     .replace('维吾尔', '')
     .replace('新疆兵团', '兵团');
 }
+
+export function validProvince(p1, p2) {
+  return p1.indexOf(p2) >= 0 || p2.indexOf(p1) >= 0;
+}

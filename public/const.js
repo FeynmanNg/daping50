@@ -17,6 +17,8 @@
 
     ORG: '主办单位：厦门市美亚柏科信息股份有限公司', // 主办方
 
+    PAGE_TITLE: '演示大屏',
+
     // 刷新延时 单位毫秒
     REFRESH_STEPS: 1000 * 5 * 1,
     REFRESH_STEPS_INTRODUCTION: 1000 * 10, // 选手介绍
