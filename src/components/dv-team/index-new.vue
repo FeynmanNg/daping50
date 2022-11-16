@@ -1,6 +1,9 @@
 <template>
   <my-dv-page fit v-bind="$attrs">
   <!-- <my-dv-page v-bind="$attrs"> -->
+  <!-- <div style="height: 100%;position: relative;"> -->
+
+  
     <div class="bg-container" style="background-size: 100% 100%">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
       <my-dv-box layout
@@ -13,11 +16,11 @@
         <my-dv-box layout :weight="3" height="100%">
           <div class="org">{{ORG}}</div>
           <div class="map-info-container">
-            <map-comp
+            <!-- <map-comp
               v-if="form"
               :form="form"
               :rank1Data="rank1Data"
-              :realTimeDynamicData="realTimeDynamicData"></map-comp>
+              :realTimeDynamicData="realTimeDynamicData"></map-comp> -->
           </div>
         </my-dv-box>
         <my-dv-box layout :gap="10" :weight="2" height="100%"></my-dv-box>
@@ -156,7 +159,7 @@
 
       <!-- 右侧 答题进度、实时动态 -->
       <my-dv-box layout :gap="10" :weight="2" height="100%" padding="0 20px 0 0">
-        <my-dv-box :weight="6" class="dt-bg" width="calc(100% - 20px)" fill="rgba(255,255,255,0.05)">
+        <my-dv-box :weight="7" class="dt-bg" width="calc(100% - 20px)" fill="rgba(255,255,255,0.05)">
           <div class="process-container" v-if="provinceAnswerProgressData && provinceAnswerProgressData.length">
           <!-- <div class="process-container"> -->
             <!-- 科目说明 -->
@@ -234,6 +237,12 @@
         </my-dv-box>
       </my-dv-box>
     </my-dv-box>
+
+    <map-comp
+              v-if="form"
+              :form="form"
+              :rank1Data="rank1Data"
+              :realTimeDynamicData="realTimeDynamicData"></map-comp>
     <!-- 表单 -->
     <init-dialog
       ref="initDialog"
@@ -241,6 +250,7 @@
       @on-pause="onPause"
       @on-reset-time="onResetTime"></init-dialog>
   </my-dv-page>
+  <!-- </div> -->
 </template>
 <script>
   import dateFormat from '$ui/utils/date';
@@ -644,6 +654,7 @@
     .content-last {
       max-height: 375px;
       margin-top: -8px;
+      padding-bottom: 60px;
       overflow-y: auto;
       &::-webkit-scrollbar {
         width:0px;
@@ -937,7 +948,7 @@
   // 实时动态
   .rt-container {
     max-height: 430px;
-    margin-top: 80px;
+    margin-top: 60px;
     overflow-y: auto;
     .rt {
       padding: 10px 10px 0;

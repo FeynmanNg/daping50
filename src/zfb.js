@@ -35,7 +35,12 @@ function buildZfb(data = []) {
     const exist = data.find(_ => validProvince(_.province, another.province));
     if (!exist) data.push(another);
     // 把 【海外】去掉、港澳台 去掉
-    data = data.filter(_ => _.province.indexOf('海外') < 0 && _.province.indexOf('香港') < 0 && _.province.indexOf('澳门') < 0 && _.province.indexOf('台湾') < 0);
+    data = data.filter(_ => {
+      return _.province.indexOf('海外') < 0 &&
+        _.province.indexOf('香港') < 0 &&
+        _.province.indexOf('澳门') < 0 &&
+        _.province.indexOf('台湾') < 0
+    });
 
     return buildZfb(data);
   } else {

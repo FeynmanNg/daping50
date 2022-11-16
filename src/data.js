@@ -493,7 +493,7 @@ export const provinceAnswerProgressData = () => {
         {
           areaCode: 179736992674188,
           progressMap: { 窝点勘查: '58%', 检查鉴定: '29%' },
-          province: '香港特别行政区',
+          province: '新疆',
           rankNo: 4,
           sort: ''
         },
@@ -535,7 +535,7 @@ export const provinceAnswerProgressData = () => {
         {
           areaCode: 6646913461007208,
           progressMap: { 窝点勘查: '52%', 检查鉴定: '57%' },
-          province: '河北省',
+          province: '河南省',
           rankNo: 10,
           sort: ''
         }
@@ -569,7 +569,7 @@ export const provinceAnswerProgressData = () => {
         {
           areaCode: 179736992674188,
           progressMap: { 窝点勘查: '58%', 检查鉴定: '29%' },
-          province: '香港特别行政区',
+          province: '新疆',
           rankNo: 4,
           sort: ''
         },
@@ -590,7 +590,7 @@ export const provinceAnswerProgressData = () => {
         {
           areaCode: 6646913461007208,
           progressMap: { 窝点勘查: '52%', 检查鉴定: '57%' },
-          province: '河北省',
+          province: '河南省',
           rankNo: 7,
           sort: ''
         },

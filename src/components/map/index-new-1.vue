@@ -356,10 +356,11 @@ $blueFont: #00ccff;
 }
 
 .map-new-container {
-  // 最大宽度 796
-  // 最大高度 967
   width: 100%;
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
   // 弹框的整体
   .base {
     width: 400px;
