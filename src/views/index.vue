@@ -9,15 +9,13 @@
                   height="calc(100% - 100px)"
                   x-align="center">
         <my-dv-box layout :gap="10" :weight="2" height="100%"></my-dv-box>
-        <my-dv-box layout :weight="3" height="100%">
-          <div class="map-info-container">
-            <map-comp
-              v-if="form"
-              :form="form"
-              :rank1Data="rank1Data"
-              :realTimeDynamicData="realTimeDynamicData"></map-comp>
-          </div>
-        </my-dv-box>
+        <div class="map-info-container">
+          <map-comp
+            v-if="form"
+            :form="form"
+            :rank1Data="rank1Data"
+            :realTimeDynamicData="realTimeDynamicData"></map-comp>
+        </div>
         <my-dv-box layout :gap="10" :weight="2" height="100%"></my-dv-box>
       </my-dv-box>
     </div>
