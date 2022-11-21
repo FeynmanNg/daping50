@@ -50,6 +50,7 @@
         <span class="num">{{totalPeople || 0}}</span>
         <span class="zh">&nbsp;人</span>
       </span>
+      <video src="../../assets/webm/page-title-bg.webm" muted width="1980" height="150" autoplay loop>您当前的浏览器版本不支持动画</video>
       <span class="title">
         {{form.title}}
       </span>
@@ -64,9 +65,17 @@
       </span>
     </div>
 
+    <!-- 地图柱子、浮框 -->
+    <map-comp
+        v-if="form"
+        :form="form"
+        :rank1Data="rank1Data"
+        :realTimeDynamicData="realTimeDynamicData"></map-comp>
+
     <my-dv-box layout direction="column" :gap="10" top="90px" width="calc(100% - 20px)"
                height="calc(100% - 100px)"
                x-align="center">
+
       <!-- 左侧 总分榜 -->
       <my-dv-box layout :gap="10" :weight="2" height="100%" padding="0 0 0 20px">
         <my-dv-box class="zfb-bg" width="100%" fill="rgba(255,255,255,0.05)">
@@ -202,7 +211,7 @@
             </transition-group>
           </div>
         </my-dv-box>
-        <my-dv-box :weight="5" class="ss-bg" width="calc(100% - 20px)" fill="rgba(255,255,255,0.05)">
+        <my-dv-box :weight="5.5" class="ss-bg" width="calc(100% - 20px)" fill="rgba(255,255,255,0.05)">
           <div class="rt-container" v-if="realTimeDynamicData && realTimeDynamicData.length">
             <!-- <vue-seamless-scroll
                   class="warp"
@@ -238,11 +247,6 @@
       </my-dv-box>
     </my-dv-box>
 
-    <map-comp
-              v-if="form"
-              :form="form"
-              :rank1Data="rank1Data"
-              :realTimeDynamicData="realTimeDynamicData"></map-comp>
     <!-- 表单 -->
     <init-dialog
       ref="initDialog"
@@ -796,7 +800,7 @@
     $h: 38px;
     // $h: calc(((100% - 20px) / 10)px);
     // 间距
-    .process { margin: 2px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
+    .process { margin: 6px 0; &:first-child { margin-top: 0; } &:last-child { margin-bottom: 0; } }
     .process {
       height: $h;
       padding: 5px 0;

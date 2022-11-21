@@ -89,10 +89,13 @@
               v-if="isTop(item.value)"
               :class="{
                 'tag': 1,
-                'tag-top3': calculateTop3(item.value),
-                'tag-top2': calculateTop2(item.value),
-                'tag-top1': calculateTop1(item.value)
+                'tag-top3': item.rankNo === 3,
+                'tag-top2': item.rankNo === 2,
+                'tag-top1': item.rankNo === 1
               }">
+              <video v-if="item.rankNo === 1" src="../../assets/webm/tag-top1.webm" muted width="60" height="60" autoplay loop>您当前的浏览器版本不支持动画</video>
+              <video v-else-if="item.rankNo === 2" src="../../assets/webm/tag-top2.webm" muted width="60" height="60" autoplay loop>您当前的浏览器版本不支持动画</video>
+              <video v-else-if="item.rankNo === 3" src="../../assets/webm/tag-top3.webm" muted width="60" height="60" autoplay loop>您当前的浏览器版本不支持动画</video>
             </div>
             <!-- 三角 -->
             <div
@@ -107,9 +110,9 @@
             <div
               :class="{
                 'bar': 1,
-                'bar-top3': calculateTop3(item.value),
-                'bar-top2': calculateTop2(item.value),
-                'bar-top1': calculateTop1(item.value)
+                'bar-top3': item.rankNo === 3,
+                'bar-top2': item.rankNo === 2,
+                'bar-top1': item.rankNo === 1
               }"
               :style="`height: ${calculateHeight(item.value)}px;`">
             </div>
@@ -120,9 +123,9 @@
             <div>{{item.value}}</div>
             <div
               :class="{
-                'top3': calculateTop3(item.value),
-                'top2': calculateTop2(item.value),
-                'top1': calculateTop1(item.value)
+                'top3': item.rankNo === 3,
+                'top2': item.rankNo === 2,
+                'top1': item.rankNo === 1
               }">{{filterProvince(item.province)}}</div>
           </div>
         </div>
@@ -326,6 +329,16 @@ export default {
     },
     isTop(value) {
       return this.calculateTop1(value) || this.calculateTop2(value) || this.calculateTop3(value);
+    },
+    calculateRank(value) {
+      const temp = cloneDeep(this.rank).sort((a, b) => a.value - b.value);
+      console.log(value, temp);
+      for(const n of temp) {
+        if (value >= temp[n].value) {
+          return n + 1;
+        }
+      }
+      return -1;
     }
   }
 }
@@ -438,21 +451,24 @@ $blueFont: #00ccff;
       }
       // top 1/2/3 标志
       .tag {
-        width: 50px;
-        height: 50px;
-        background-image: url("../../assets/img-common/tag-top1.png");
+        // width: 50px;
+        // height: 50px;
+        width: 60px;
+        height: 60px;
+        // background-image: url("../../assets/img-common/tag-top1.png");
         background-size: 130% 130%;
         background-repeat: no-repeat;
         background-position: center;
-        transform: translate(-15px, 9px);
+        // transform: translate(-15px, 9px);
+        transform: translate(-20px, 15px);
         &.tag-top3 {
-          background-image: url("../../assets/img-common/tag-top3.png");
+          // background-image: url("../../assets/img-common/tag-top3.png");
         }
         &.tag-top2 {
-          background-image: url("../../assets/img-common/tag-top2.png");
+          // background-image: url("../../assets/img-common/tag-top2.png");
         }
         &.tag-top1 {
-          background-image: url("../../assets/img-common/tag-top1.png");
+          // background-image: url("../../assets/img-common/tag-top1.png");
         }
       }
       // 三角形

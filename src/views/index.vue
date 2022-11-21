@@ -30,6 +30,7 @@ import {
 } from '../mock';
 import storage from '@/helper/storage';
 import mapComp from '@/components/map/index-new-1';
+// import mapComp from '@/components/map';
 
 const form = storage.getForm();
 

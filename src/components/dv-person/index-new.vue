@@ -31,6 +31,7 @@
         <span class="zh">&nbsp;人</span>
       </span>
       <!-- <my-dv-title type="primary" strong shadow x-align="center">{{form.title}}</my-dv-title> -->
+      <video src="../../assets/webm/page-title-bg.webm" muted width="1980" height="150" autoplay loop>您当前的浏览器版本不支持动画</video>
       <span class="title">
         {{form.title}}
       </span>
@@ -71,6 +72,9 @@
             </div>
             <div class="bottom">
               <div class="left">
+                <div class="circle-bg">
+                  <video src="../../assets/webm/cyan-circle.webm" muted width="313" height="200" autoplay loop>您当前的浏览器版本不支持动画</video>
+                </div>
                 <div class="text">正确率</div>
                 <div class="number" v-if="answerProfileData1">
                   {{answerProfileData1.accuracyRate ? answerProfileData1.accuracyRate.replace('%', '') : 0}}
@@ -276,6 +280,9 @@
             </div>
             <div class="bottom">
               <div class="left">
+                <div class="circle-bg">
+                  <video src="../../assets/webm/blue-circle.webm" muted width="313" height="200" autoplay loop>您当前的浏览器版本不支持动画</video>
+                </div>
                 <div class="text">正确率</div>
                 <div class="number" v-if="answerProfileData2">
                   {{answerProfileData2.accuracyRate ? answerProfileData2.accuracyRate.replace('%', '') : 0}}
@@ -1000,13 +1007,21 @@ $gaikuangH: 270px;
       }
       .left {
         @include center;
-        background-image: url("../../assets/img-person/person-bs-circle.png");
+        // background-image: url("../../assets/img-person/person-bs-circle.png");
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
         // border-right: 1px solid #013061;
         flex-direction: column;
         font-size: 16px;
+        position: relative;
+        .circle-bg {
+          width: 313px;
+          height: 200px;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
         .text {
           margin-top: -10px;
           font-size: 22px;
