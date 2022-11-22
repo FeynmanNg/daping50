@@ -1019,8 +1019,9 @@ $gaikuangH: 270px;
           width: 313px;
           height: 200px;
           position: absolute;
-          top: 0;
-          left: 0;
+          z-index: -1; // 防止遮蔽数字
+          // top: 0;
+          // left: 0;
         }
         .text {
           margin-top: -10px;

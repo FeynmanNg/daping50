@@ -2,6 +2,7 @@
 .temp
 .my
 node_modules
+.zip
 /dist
 dist.*
 /apps
