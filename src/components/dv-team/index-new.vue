@@ -381,8 +381,9 @@
     methods: {
       filterProvince,
       onShowInit() {
-        const isProd = process.env.NODE_ENV === 'production';
-        this.$refs.initDialog.dialogVisible = isProd;
+        // const isProd = process.env.NODE_ENV === 'production';
+        // this.$refs.initDialog.dialogVisible = isProd;
+        this.$refs.initDialog.dialogVisible = true;
       },
       onResetTime() {
         this.$refs.timer.reset();
