@@ -56,8 +56,8 @@
 
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="onResetTime">重置计时</el-button>
-      <el-button :type="pause ? 'warning' : 'primary'" @click="onPause">{{pause ? '开 始' : '暂 停'}}</el-button>
+      <!-- <el-button type="primary" @click="onResetTime">重置计时</el-button> -->
+      <!-- <el-button :type="pause ? 'warning' : 'primary'" @click="onPause">{{pause ? '开 始' : '暂 停'}}</el-button> -->
       <el-button @click="dialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="onSubmit">确 定</el-button>
     </span>
