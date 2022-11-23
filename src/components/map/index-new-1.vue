@@ -85,8 +85,10 @@
           </transition>
           <div class="bar-box">
             <!-- 皇冠 -->
+            <!-- <div
+              v-if="isTop(item.value)" -->
             <div
-              v-if="isTop(item.value)"
+              v-if="item.rankNo <= 3"
               :class="{
                 'tag': 1,
                 'tag-top3': item.rankNo === 3,

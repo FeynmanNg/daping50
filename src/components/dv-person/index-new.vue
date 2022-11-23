@@ -686,7 +686,7 @@
           stageName: stage[random].name
         };
         api.answerProfile(query).then(res => {
-          // console.log('答题概况数据', res);
+          console.log('答题概况数据', res);
           this[`answerProfileData${leftOrRight}`] = res || {}; // todo
         }).catch(e => {
           console.log(e);
@@ -700,7 +700,7 @@
           competitionIds: sub1.concat(sub2)
         }
         api.totalContestantsNumber(query).then(res => {
-          // console.log('参赛人数数据', res);
+          console.log('参赛人数数据', res);
           this.totalPeople = res || 0; // todo
         }).catch(e => {
           console.log(e);
@@ -739,7 +739,7 @@
           pageNo: 1,
           pageSize: 99999
         }).then(res => {
-          // console.log('右列表', res);
+          console.log('右列表', res);
           if (res.list) { // todo
             this.listRight = res.list || [];
           }
@@ -781,7 +781,7 @@
             : this.listRight[this.interval.playerIntroduction.value];
           const userId = temp.userId;
           api.playerIntroduction({ userId }).then(res => {
-            // console.log('选手介绍', res);
+            console.log('选手介绍', res);
             this.playerIntroductionData = res; // todo
             if (this.playerIntroductionData) {
               this.playerIntroductionData.name = temp.name;
