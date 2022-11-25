@@ -27,6 +27,8 @@ export default {
     // ids 由 字符串 修改为 字符串数组
     if (value.subject1ids) {
       value.subject1ids = value.subject1ids.split(',').filter(s => s);
+    }
+    if (value.subject2ids) {
       value.subject2ids = value.subject2ids.split(',').filter(s => s);
     }
     const res = JSON.stringify(value);

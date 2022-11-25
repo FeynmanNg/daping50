@@ -1030,7 +1030,8 @@ $gaikuangH: 270px;
         }
         .number {
           margin-top: 15px;
-          font-size: 44px;
+          // font-size: 44px;
+          font-size: 33px;
           &>span {
             font-size: 24px;
           }
