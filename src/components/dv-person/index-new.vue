@@ -1352,7 +1352,7 @@ $gaikuangH: 270px;
             & > span:last-child {
               color: $blueFont;
               margin-left: 20px;
-              font-size: 20px;
+              font-size: 28px;
             }
           }
           & > span:last-child {
