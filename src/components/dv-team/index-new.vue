@@ -4,7 +4,7 @@
   <!-- <div style="height: 100%;position: relative;"> -->
 
   
-    <div class="bg-container" style="background-size: 100% 100%">
+    <div class="bg-container">
       <my-dv-starry :opacity="0.4"></my-dv-starry>
       <my-dv-box layout
                   direction="column" :gap="10"
@@ -581,7 +581,8 @@
     // background-image: url("../../assets/img-team/BG.png");
     // background-image: url("../../assets/img-team/map-bg.png");
     background-image: url("../../assets/img-team/BG-11-9.png");
-    background-size: 100% 100%;
+    // background-size: 100% 100%;
+    background-size: 110% 110%;
     background-repeat: no-repeat;
     background-position: bottom;
     position: absolute;
