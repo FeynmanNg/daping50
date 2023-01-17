@@ -1155,7 +1155,7 @@ $gaikuangH: 270px;
         &>span:first-child {
           // todo url
           background-image: url("../../assets/img-common/top1-icon.png");
-          // background-position: center;
+          background-position: center;
           background-size: 90% 100%;
           background-repeat: no-repeat;
         }
@@ -1168,7 +1168,7 @@ $gaikuangH: 270px;
         &>span:first-child {
           // todo url
           background-image: url("../../assets/img-common/top2-icon.png");
-          // background-position: center;
+          background-position: center;
           background-size: 90% 100%;
           background-repeat: no-repeat;
         }
@@ -1182,7 +1182,7 @@ $gaikuangH: 270px;
         &>span:first-child {
           // todo url
           background-image: url("../../assets/img-common/top3-icon.png");
-          // background-position: center;
+          background-position: center;
           background-size: 90% 100%;
           background-repeat: no-repeat;
         }
