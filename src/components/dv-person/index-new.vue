@@ -62,9 +62,8 @@
                 :key="`${sub.name}_${i}`"
                 :class="{
                   'kemu': 1, 'name': 1,
-                  'active': (interval.answerProfile.value1 + 1) % arrSub1.length === i,
-                  'inactive': answerProfileData1.onlineNumber === 0
-                    || answerProfileData1.onlineNumber === null
+                  'active': (interval.answerProfile.value1 - 1) % arrSub1.length === i,
+                  'inactive': answerProfileData1.onlineNumber === null
                     || answerProfileData1.onlineNumber === 0
                 }">
                 {{sub.name}}
@@ -228,8 +227,8 @@
                     <div v-if="item.show" :class="{
                       'list-complete-item': true,
                       'float-item': true,
-                      'wdkc': form.subject1ids.indexOf(item.competitionId) >= 0,
-                      'jcjd': form.subject1ids.indexOf(item.competitionId) < 0
+                      'wdkc': form.subject1ids.indexOf(item.competitionId + '') >= 0,
+                      'jcjd': form.subject1ids.indexOf(item.competitionId + '') < 0
                     }">
                       <div class="content">
                         <div class="img">
@@ -244,7 +243,7 @@
                           <div class="correct">答对+1！连续答对{{item.continueRight}}题！</div>
                         </div>
                       </div>
-                      <div class="type">{{form.subject1ids.indexOf(item.competitionId) >= 0 ? form.subject1 : form.subject2}}</div>
+                      <div class="type">{{form.subject1ids.indexOf(item.competitionId + '') >= 0 ? form.subject1 : form.subject2}}</div>
                     </div>
                   </transition>
                 </div>
@@ -270,9 +269,8 @@
                 :key="`${sub.name}_${i}`"
                 :class="{
                   'kemu': 1, 'name': 1,
-                  'active': (interval.answerProfile.value2 + 1) % arrSub2.length === i,
-                  'inactive': answerProfileData2.onlineNumber === undefined
-                    || answerProfileData2.onlineNumber === null
+                  'active': (interval.answerProfile.value2 - 1) % arrSub2.length === i,
+                  'inactive': answerProfileData2.onlineNumber === null
                     || answerProfileData2.onlineNumber === 0
                 }">
                 {{sub.name}}
@@ -404,6 +402,8 @@
   const SHOW_PERSON_COMPETITION_DECLARATION = window.__GLOBAL__.SHOW_PERSON_COMPETITION_DECLARATION;
   // 个人 实时动态浮框 显示
   const SHOW_PERSON_REAL_TIME_DYNAMIC = window.__GLOBAL__.SHOW_PERSON_REAL_TIME_DYNAMIC;
+  // 个人 排名数量
+  const PAGE_SIZE = window.__GLOBAL__.PAGE_SIZE;
 
   export default {
     components: { initDialog, timer },
@@ -676,7 +676,8 @@
         const ids = this.form[keyIds]; // 窝点勘察ids/检查鉴定ids
         // 左边/右边的阶段数组 [科目一, 科目二...]
         const stage = this.form.arrSub.filter(s => s.subject === subject);
-        const random = stage.length ? (this.interval.answerProfile[`value${leftOrRight}`])++ % stage.length : -1;
+        // const random = stage.length ? (this.interval.answerProfile[`value${leftOrRight}`])++ % stage.length : -1;
+        const random = stage.length ? (this.interval.answerProfile[`value${leftOrRight}`]) % stage.length : -1;
         if (random === -1) {
           return;
         }
@@ -690,6 +691,8 @@
           this[`answerProfileData${leftOrRight}`] = res || {}; // todo
         }).catch(e => {
           console.log(e);
+        }).finally(() => {
+          (this.interval.answerProfile[`value${leftOrRight}`])++;
         });
       },
       // 参赛人数数据
@@ -721,7 +724,7 @@
         api.rank({
           competitionIds: this.form.subject1ids,
           pageNo: 1,
-          pageSize: 99999
+          pageSize: PAGE_SIZE
         }).then(res => {
           if (res.list) { // todo
             this.listLeft = res.list || [];
@@ -737,7 +740,7 @@
         api.rank({
           competitionIds: this.form.subject2ids,
           pageNo: 1,
-          pageSize: 99999
+          pageSize: PAGE_SIZE
         }).then(res => {
           console.log('右列表', res);
           if (res.list) { // todo
@@ -795,10 +798,13 @@
       
       // 实时动态数据 用于展示中间部分，下面的浮框
       realTimeDynamic() {
+        // 条件过滤
+        const ids = this.form.subject1ids + ',' + this.form.subject2ids;
         api.realTimeDynamic().then(res => {
           // console.log('实时动态数据', res);
           // 条件过滤
-          res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
+          // res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
+          res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC && ids.indexOf(`${r.competitionId}`) >= 0));
           if (!res || res.length === 0) return;
           this.realTimeDynamicData = this.realTimeDynamicData.concat([res[0]]);
           if (this.realTimeDynamicData.length) {
@@ -813,7 +819,8 @@
         this.interval.realTimeDynamic.timer = setInterval(() => {
           api.realTimeDynamic().then(res => {
             // 条件过滤
-            res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
+            // res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC));
+            res && (res = res.filter(r => r.continueRight >= this.SHOW_PERSON_REAL_TIME_DYNAMIC && ids.indexOf(`${r.competitionId}`) >= 0));
             if (res && res.length) {
               const last = res[res.length - 1];
               last.img = this.getImageUrl(last.userId);
@@ -1117,7 +1124,8 @@ $gaikuangH: 270px;
       }
     }
     .content {
-      $heightCommon: 30px;
+      // $heightCommon: 30px;
+      $heightCommon: 34px;
       display: flex;
       height: $heightCommon;
       // line-height: $heightCommon;

@@ -15,7 +15,8 @@
     PROCESS: '答题进度榜', // 答题进度
     RTK: '实时动态', // 实时动态
 
-    ORG: '主办单位：厦门市美亚柏科信息股份有限公司', // 主办方
+    // ORG: '主办单位：厦门市美亚柏科信息股份有限公司', // 主办方
+    ORG: '主办单位：中华人民共和国公安部 中华全国总工会', // 主办方
 
     PAGE_TITLE: '演示大屏',
 
@@ -38,7 +39,9 @@
 
     SHOW_PERSON_COMPETITION_DECLARATION: false, // 个人 比赛宣言
 
-    SHOW_PERSON_REAL_TIME_DYNAMIC: 5 // 个人 实时动态的浮夸：只有 连续答题 >= 5 才显示
+    SHOW_PERSON_REAL_TIME_DYNAMIC: 5, // 个人 实时动态的浮夸：只有 连续答题 >= 5 才显示
+
+    PAGE_SIZE: 15 // 个人排名列表数量
 
   }
 

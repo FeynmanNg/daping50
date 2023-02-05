@@ -93,7 +93,7 @@
               <transition-group name="list-complete">
                 <div
                   v-for="(item, i) in rank1Data"
-                  v-show="i < 10"
+                  v-if="i < 10"
                   :key="item.areaCode"
                   class="content-item list-complete-item">
                   <span>{{i > 2 ? item.rankNo : ''}}</span>
@@ -548,14 +548,16 @@
         };
         api.competitionProvinceRank({ competitionMap }).then(res => {
           console.log('总分榜', res);
-          this.rank1Data = res || []; // todo
+          // this.rank1Data = res || []; // todo
+          this.$set(this, 'rank1Data', res || []);
         }).catch(e => {
           console.log(e);
         });
         this.interval.competitionProvinceRank.timer = setInterval(() => {
           api.competitionProvinceRank({ competitionMap }).then(res => {
             console.log('总分榜', res);
-            this.rank1Data = res || []; // todo
+            // this.rank1Data = res || []; // todo
+            this.$set(this, 'rank1Data', res || []);
           }).catch(e => {
             console.log(e);
           });
