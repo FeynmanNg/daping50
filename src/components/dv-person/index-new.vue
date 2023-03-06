@@ -1124,8 +1124,8 @@ $gaikuangH: 270px;
       }
     }
     .content {
-      // $heightCommon: 30px;
-      $heightCommon: 34px;
+      $heightCommon: 30px;
+      // $heightCommon: 34px;
       display: flex;
       height: $heightCommon;
       // line-height: $heightCommon;

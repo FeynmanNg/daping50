@@ -41,7 +41,7 @@
 
     SHOW_PERSON_REAL_TIME_DYNAMIC: 5, // 个人 实时动态的浮夸：只有 连续答题 >= 5 才显示
 
-    PAGE_SIZE: 15 // 个人排名列表数量
+    PAGE_SIZE: 40 // 个人排名列表数量
 
   }
 
